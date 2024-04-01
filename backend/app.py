@@ -99,7 +99,7 @@ def rename_notebook(notebook_id):
 @app.route('/notebooks/<int:notebook_id>', methods=['DELETE'])
 def delete_notebook(notebook_id):
     if remove_notebook(notebook_id):
-        return jsonify({"message": "Notebook deleted successfully"}), 200
+        return jsonify({"message": "Notebook deleted successfully"}), 204
     else:
         return jsonify({"message": "Notebook not found"}), 404
 
@@ -107,6 +107,11 @@ def delete_notebook(notebook_id):
 def get_notes_from_notebook(notebook_id):
     notes = get_notes_in_notebook(notebook_id)
     return jsonify(notes), 200
+
+@app.route('/notebooks/<int:notebook_id>/notes/<int:note_id>', methods=['POST'])
+def add_note_to_notebook(notebook_id, note_id):
+    add_note_to_a_notebook(note_id, notebook_id)
+    return jsonify({"message": "Note added to notebook successfully"}), 201
 
 @app.route('/notes', methods=['POST'])
 def create_note():
@@ -121,14 +126,16 @@ def create_note():
 
 @app.route('/notes/<int:note_id>', methods=['GET'])
 def get_note(note_id):
-    return 200
+    note = get_note_details(note_id)
+    if note:
+        return jsonify(note), 200
+    else:
+        return jsonify({"message": "Note not found"}), 404
 
 @app.route('/notes/<int:note_id>', methods=['DELETE'])
 def delete_note(note_id):
-    if remove_note(note_id):
-        return jsonify({"message": "Note deleted"}), 200
-    else:
-        return jsonify({"message": "Note not found"}), 404
+    remove_note(note_id)
+    return jsonify({"message": "Note deleted"}), 204
 
 @app.route('/notes/<int:note_id>/versions', methods=['POST'])
 def save_note_content(note_id):
@@ -139,10 +146,8 @@ def save_note_content(note_id):
     if content is None or editor_id is None:
         return jsonify({"message": "Content and editor ID are required"}), 400
 
-    if create_note_version(note_id, content, editor_id):
-        return jsonify({"message": "Note version saved"}), 201
-    else:
-        return jsonify({"message": "Note not found"}), 404
+    create_note_version(note_id, content, editor_id)
+    return jsonify({"message": "Note version saved"}), 201
 
 @app.route('/notes/<int:note_id>/versions', methods=['GET'])
 def get_note_versions(note_id):
@@ -165,12 +170,21 @@ def get_note_version_by_date(note_id, date):
     else:
         return jsonify({"message": "No version found for this date"}), 404
 
-@app.route('/notes/<int:note_id>/share', methods=['POST'])
-def share_note_with_user(note_id):
+@app.route('/notes/<int:note_id>/owners', methods=['GET'])
+def get_note_owners(note_id):
     data = request.json
-    sharer_id = data.get('sharer_id')
-    receiver_id = data.get('receiver_id')
-    return 200
+    current_user_id = data.get('current_user_id')
+
+    if not current_user_id:
+        return jsonify({"message": "Current user id required"}), 404
+
+    owners = get_note_access_users(note_id, current_user_id)
+    return jsonify(owners), 200
+
+@app.route('/notes/<int:note_id>/owners/<int:user_id>', methods=['POST'])
+def add_note_owner(note_id, user_id):
+    give_user_access_to_note(note_id, user_id)
+    return 201
 
 if __name__ == '__main__':
     app.run(debug=True)

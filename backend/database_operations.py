@@ -106,6 +106,15 @@ def update_notebook_title(notebook_id, new_title):
     conn.close()
     return affected_rows > 0
 
+def add_note_to_a_notebook(note_id, notebook_id):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    query = "INSERT INTO notebook_contains (note_id, notebook_id) VALUES (%s, %s)"
+    cursor.execute(query, (note_id, notebook_id))
+    conn.commit()
+    cursor.close()
+    conn.close()
+
 def remove_notebook(notebook_id):
     conn = get_db_connection()
     cursor = conn.cursor()
@@ -143,37 +152,33 @@ def insert_note(title):
     conn.close()
     return note_id
 
+def get_note_details(note_id):
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+    query = "SELECT * FROM notes WHERE id = %s"
+    cursor.execute(query, (note_id,))
+    note = cursor.fetchone()
+    cursor.close()
+    conn.close()
+    return note
+
 def create_note_version(note_id, content, editor_id):
     conn = get_db_connection()
     cursor = conn.cursor()
-
-    # vérifie si la note existe
-    cursor.execute("SELECT COUNT(*) FROM notes WHERE id = %s", (note_id,))
-    if cursor.fetchone()[0] == 0:
-        return False
-
     query = "INSERT INTO versions (note_id, editor_id, content) VALUES (%s, %s, %s)"
     cursor.execute(query, (note_id, editor_id, content))
     conn.commit()
     cursor.close()
     conn.close()
-    return True
 
 def remove_note(note_id):
     conn = get_db_connection()
     cursor = conn.cursor()
-
-    # vérifie si la note existe
-    cursor.execute("SELECT COUNT(*) FROM notes WHERE id = %s", (note_id,))
-    if cursor.fetchone()[0] == 0:
-        return False
-
     cursor.execute("DELETE FROM versions WHERE note_id = %s", (note_id,))
     cursor.execute("DELETE FROM notes WHERE id = %s", (note_id,))
     conn.commit()
     cursor.close()
     conn.close()
-    return True
 
 def get_versions_of_note(note_id):
     conn = get_db_connection()
@@ -194,3 +199,27 @@ def get_version_of_note_by_date(note_id, date):
     cursor.close()
     conn.close()
     return version
+
+def get_note_access_users(note_id, current_user_id):
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+    query = """
+        SELECT users.name
+        FROM users
+        JOIN user_as_access ON users.id = user_as_access.user_id
+        WHERE user_as_access.note_id = %s AND users.id <> %s
+    """
+    cursor.execute(query, (note_id, current_user_id))
+    owners = cursor.fetchall()
+    cursor.close()
+    conn.close()
+    return owners
+
+def give_user_access_to_note(note_id, user_id):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    query = "INSERT INTO user_as_access (note_id, user_id) VALUES (%s, %s)"
+    cursor.execute(query, (note_id, user_id))
+    conn.commit()
+    cursor.close()
+    conn.close()
