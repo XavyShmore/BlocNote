@@ -22,8 +22,8 @@ CREATE TABLE notes (
 CREATE TABLE versions (
     note_id integer not null,
     FOREIGN KEY (note_id) REFERENCES notes(id)  ON DELETE CASCADE,
-    editor_id integer not null ,
-    FOREIGN KEY (editor_id) REFERENCES users(id) ON DELETE CASCADE,
+    editor_id integer,
+    FOREIGN KEY (editor_id) REFERENCES users(id) ON DELETE SET NULL,
     content MEDIUMTEXT,
     creation datetime DEFAULT NOW()
 );

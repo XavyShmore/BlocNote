@@ -24,24 +24,33 @@ try:
     print("Connected to MySQL database successfully!")
 except Exception as e:
     print(f"Error connecting to MySQL database: {e}")
-
-
-#databaseCleanup = f"""
-#    DROP DATABASE IF EXISTS your_database_name;
-#    CREATE DATABASE {DB_NAME};
-#    USE {DB_NAME}
-#"""
+    exit()
 
 # Create a cursor object to execute SQL statements
 cursor = conn.cursor()
 
-#cursor.execute(databaseCleanup, multi=True)
+
+def execute_sql_file(file: str):
+    with open(file, 'r') as f:
+        sql = f.read()
+        els = cursor.execute(sql, multi=True)
+        for el in els:
+            pass
+
 
 # Execute initialization SQL to generate the database schema
-with open('InitializeDB.sql', 'r') as f:
-    init_sql = f.read()
-    cursor.execute(init_sql, multi=True)
+
+# Destroy the previous content
+execute_sql_file('DestroyDB.sql')
+
+# Create new shema
+execute_sql_file('InitializeDB.sql')
+
+# Populate the DB
+execute_sql_file('populate.sql')
+
 
 # Commit the transaction and close the connection
+cursor.close()
 conn.commit()
 conn.close()
