@@ -11,7 +11,7 @@ CREATE TABLE notebooks (
     title varchar(100),
     creation DATETIME DEFAULT NOW(),
     owner_id INTEGER,
-    FOREIGN KEY (owner_id) REFERENCES users(id) ON DELETE SET NULL
+    FOREIGN KEY (owner_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
 CREATE TABLE notes (
@@ -30,7 +30,7 @@ CREATE TABLE versions (
 
 CREATE INDEX versions_index ON versions (note_id, creation, editor_id);
 
-CREATE TABLE user_as_access (
+CREATE TABLE user_has_access (
     user_id integer not null,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     note_id integer NOT NULL,

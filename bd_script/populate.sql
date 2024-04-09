@@ -9,4 +9,5 @@ VALUES
     ('samuel.levesque.102@icloud.com', 'lkjhasdlkjashdlkjashdlkj', 'Samuel Levesque', 'Je suis un ingénieur en mécanique'),
     ('camille.robert.114@bell.net', 'lkjhasdlkjashdlkjashdlkj', 'Camille Robert', 'Je suis une avocate spécialisée en droit familial'),
     ('olivier.richard.126@videotron.ca', 'lkjhasdlkjashdlkjashdlkj', 'Olivier Richard', 'Je suis un développeur web et mobile'),
-    ('elodie.pilon.138@rogers.com', 'lkjhasdlkjashdlkjashdlkj', 'Élodie Pilon', 'Je suis une graphiste et webdesigner');
+    ('elodie.pilon.138@rogers.com', 'lkjhasdlkjashdlkjashdlkj', 'Élodie Pilon', 'Je suis une graphiste et webdesigner'),
+    ('shrek.shrek@shrek.tv', 'lkjhasdlkjashdlkjashdlkj', 'Shrek', 'Je suis un ogre vert qui vit dans un marais');
