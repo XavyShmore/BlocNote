@@ -11,3 +11,10 @@ VALUES
     ('olivier.richard.126@videotron.ca', 'lkjhasdlkjashdlkjashdlkj', 'Olivier Richard', 'Je suis un développeur web et mobile'),
     ('elodie.pilon.138@rogers.com', 'lkjhasdlkjashdlkjashdlkj', 'Élodie Pilon', 'Je suis une graphiste et webdesigner'),
     ('shrek.shrek@shrek.tv', 'lkjhasdlkjashdlkjashdlkj', 'Shrek', 'Je suis un ogre vert qui vit dans un marais');
+
+INSERT INTO notes (title)
+VALUE ('This will be a greate note');
+
+INSERT INTO user_as_access (user_id, note_id)
+VALUES (1,1),
+       (2,1);
