@@ -13,18 +13,18 @@
         </div>
     </div>
     <div class="content">
-        <tipTapEditor/>
+        <TipTapEditor/>
     </div>
 </template>
 
 <script>
 import { defineComponent } from 'vue';
 import { ElButton } from 'element-plus'
-import tipTapEditor from '@/components/editor/tipTapEditor.vue'
+import TipTapEditor from '@/components/Editor/TipTapEditor.vue'
 
 export default defineComponent({
   components: {
-    tipTapEditor,
+    TipTapEditor,
     ElButton
   },
 });

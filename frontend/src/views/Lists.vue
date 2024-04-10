@@ -6,7 +6,7 @@
 </template>
 
 <script>
-import TableLists from '@/components/listsTable/TableLists.vue'
+import TableLists from '@/components/ListsTable/TableLists.vue'
 
 export default {
   components: {

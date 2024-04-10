@@ -1,37 +1,37 @@
 <template>
-    <el-form :model="form">
-        <el-form-item label="Username">
-            
-        </el-form-item>
-        <el-form-item label="Password">
-            
-        </el-form-item>
-    </el-form>
+    <div class="mainContent">
+        <el-tabs type="border-card" :stretch="true" model-value="Login" class="authCard">
+            <el-tab-pane label="Login" name="Login" >
+                <LoginCard/>
+            </el-tab-pane>
+            <el-tab-pane label="Sign Up" name="Sign Up">
+                <SignUpCard/>
+            </el-tab-pane>
+        </el-tabs>
+    </div>
 </template>
 
 <script>
-import { reactive } from 'vue';
-import { ElForm } from 'element-plus';
+import LoginCard from "@/components/AuthCards/LoginCard";
+import SignUpCard from "@/components/AuthCards/SignUpCard";
+import { ElTabs } from 'element-plus';
 
-export default{
+export default {
     components: {
-        ElForm
+        LoginCard,
+        SignUpCard,
+        ElTabs
     },
     setup() {
-        const form = reactive({
-            username: '',
-            password: '',
-        })
 
-        const onSubmit = () => {
-            console.log('Form submited!')
-        }
-
-        return { form, onSubmit };
     }
 }
-
 </script>
 
 <style>
+.authCard {
+    max-width: 30%;
+    max-height: fit-content;
+    margin: auto auto;
+}
 </style>
