@@ -1,19 +1,39 @@
 <template>
-    <BreadcrumbRoutes/>
+    <el-page-header @back="goBack" class="pageHeader">
+    <template #content>
+      <span class="text-large font-600 mr-3"> Title </span>
+    </template>
+    <template>
+        <el-divider style="margin-top: 12px;"/>
+    </template>
+  </el-page-header>
+  <RouterView/>
 </template>
 
 <script>
-import BreadcrumbRoutes from './BreadcrumbRoutes.vue';
+import { ElPageHeader, ElDivider } from 'element-plus';
 
 export default {
     components: {
-        BreadcrumbRoutes: BreadcrumbRoutes
+        ElPageHeader,
+        ElDivider
+    },
+    setup() {
+        const goBack = () => {
+            console.log('go back')
+        }
+
+        return { goBack }
     }
 }
 
 </script>
 
 <style>
+    .pageHeader { 
+        margin: 1vh 1vw
+    }
+
     .menu {
         display: flex;
         width: 100%

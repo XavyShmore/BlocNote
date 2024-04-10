@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <div style="display: flex; justify-content: center;">
+    <!-- <div style="display: flex; justify-content: center;">
       <nav>
         <router-link to="/"> Home </router-link>
       </nav>
@@ -13,7 +13,7 @@
       <nav>
         <router-link to="/notes/:id"> Notes </router-link>
       </nav>
-    </div>
+    </div> -->
     <HeroPage/>
   </div>
 </template>
