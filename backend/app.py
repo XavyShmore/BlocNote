@@ -2,17 +2,21 @@ from flask import Flask, jsonify, request
 from database_operations import *
 from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
+from dotenv import load_dotenv
+import jwt
 
 app = Flask(__name__)
 
+load_dotenv()
+app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 
 @app.route('/register', methods=['POST'])
 def register():
     data = request.json
     email = data.get('email')
     password = data.get('password')
-    name = data.get('name', '')
-    bio = data.get('bio', '')
+    name = data.get('name')
+    bio = ""
 
     if not email or not password:
         return jsonify({"message": "Email and password are required"}), 400
@@ -20,7 +24,11 @@ def register():
     hashed_password = generate_password_hash(password)
     user_id = register_user(email, hashed_password, name, bio)
 
-    return jsonify({"message": "User registered", "user_id": user_id}), 201
+    token = jwt.encode({
+        'user_id': user_id
+    }, app.config['SECRET_KEY'])
+
+    return jsonify({"message": "User registered", "token": token}), 201
 
 
 @app.route('/login', methods=['POST'])
@@ -32,9 +40,13 @@ def login():
     if not email or not password:
         return jsonify({"message": "Email and password are required"}), 400
 
-    hashed_password = get_hashed_password(email)
-    if hashed_password and check_password_hash(hashed_password, password):
-        return jsonify({"message": "Login successful"}), 200
+    user = get_user_by_email(email)
+    if user and check_password_hash(user['password_hash'], password):
+        token = jwt.encode({
+            'user_id': user['id']
+        }, app.config['SECRET_KEY'])
+
+        return jsonify({"token": token}), 200
     else:
         return jsonify({"message": "Invalid email or password"}), 401
 
@@ -89,6 +101,18 @@ def create_notebook():
 
     notebook_id = insert_notebook(title, owner_id)
     return jsonify({"message": "Notebook created successfully", "notebook_id": notebook_id}), 201
+
+
+@app.route('/<int:user_id>/notebooks', methods=['GET'])
+def get_notebooks(user_id):
+    notebooks = get_notebooks_of_user(user_id)
+    return jsonify(notebooks), 200
+
+
+@app.route('/notebooks/<int:notebook_id>', methods=['GET'])
+def get_notebook(notebook_id):
+    notebook = get_notebook_details(notebook_id)
+    return jsonify(notebook), 200
 
 
 @app.route('/notebooks/<int:notebook_id>', methods=['PUT'])

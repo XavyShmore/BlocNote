@@ -1,5 +1,16 @@
+import jwt_decode from 'jwt-decode';
 
-export const register = async (email, password, name, bio) => {
+export const getUserId = () => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+        return null;
+    }
+
+    const decoded_token = jwt_decode(token);
+    return decoded_token.user_id;
+};
+
+export const register = async (email, password, name) => {
     const response = await fetch('/register', {
         method: 'POST',
         headers: {
@@ -8,13 +19,20 @@ export const register = async (email, password, name, bio) => {
         body: JSON.stringify({
             email,
             password,
-            name,
-            bio,
+            name
         }),
     });
 
-    return await response.json();
+    if (response.ok) {
+        const data = await response.json();
+        localStorage.setItem('token', data.token);
+        return { success: true };
+    } else {
+        const error = await response.json();
+        return { success: false, message: error.message };
+    }
 };
+
 
 export const login = async (email, password) => {
     const response = await fetch('/login', {
@@ -28,7 +46,14 @@ export const login = async (email, password) => {
         }),
     });
 
-    return await response.json();
+    if (response.ok) {
+        const data = await response.json();
+        localStorage.setItem('token', data.token);
+        return { success: true };
+    } else {
+        const error = await response.json();
+        return { success: false, message: error.message };
+    }
 };
 
 export const setUserName = async (userId, name) => {
@@ -85,6 +110,22 @@ export const createNotebook = async (title, ownerId) => {
             title,
             owner_id: ownerId,
         }),
+    });
+
+    return await response.json();
+};
+
+export const getNotebooks = async (userId) => {
+    const response = await fetch(`/${userId}/notebooks`, {
+        method: 'GET',
+    });
+
+    return await response.json();
+};
+
+export const getNotebook = async (notebookId) => {
+    const response = await fetch(`/notebooks/${notebookId}`, {
+        method: 'GET',
     });
 
     return await response.json();
