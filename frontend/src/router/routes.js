@@ -2,7 +2,8 @@ import { createRouter, createWebHistory } from 'vue-router'
 import Home from '@/views/Home.vue'
 import Profile from '@/views/Profile.vue'
 import Lists from '@/views/Lists.vue'
-import Notes from '@/views/Notes.vue'
+import Note from '@/views/Note.vue'
+import Login from '@/views/Login.vue'
 
 const routes = [
   {
@@ -11,21 +12,25 @@ const routes = [
     component: Home
   },
   {
-    path: '/profile/:id',
+    path: '/profile/:userId',
     name: 'profile',
     component: Profile
   },
   {
-    path: '/lists/:id',
+    path: '/lists/:listId',
     name: 'lists',
     component: Lists
   },
   {
-    path: '/notes/:id',
-    name: 'notes',
-    component: Notes
+    path: '/notes/:noteId',
+    name: 'note',
+    component: Note
   },
-
+  {
+    path: '/',
+    name: 'login',
+    component: Login
+  }
 ]
 
 export const router = createRouter({

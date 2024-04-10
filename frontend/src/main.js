@@ -7,14 +7,17 @@ import VueAxios from "vue-axios"
 import "./App.css"
 
 import 'primevue/resources/themes/aura-light-green/theme.css'
+import 'primevue/resources/primevue.min.css'
+import 'primeicons/primeicons.css'
 
-import Tooltip from 'primevue/tooltip'
-import BadgeDirective from 'primevue/badgedirective'
-import Ripple from 'primevue/ripple'
-import StyleClass from 'primevue/styleclass'
-import FocusTrap from 'primevue/focustrap'
-import AnimateOnScroll from 'primevue/animateonscroll'
-import Menubar from 'primevue/menubar'
+import Breadcrumb from 'primevue/breadcrumb'
+
+import ElementPlus from 'element-plus';
+import ElementTiptapPlugin from 'element-tiptap-vue3-fixed';
+import * as ElementPlusIconsVue from '@element-plus/icons-vue'
+
+import 'element-tiptap-vue3-fixed/lib/style.css';
+import 'element-plus/dist/index.css'
 
 const app = createApp(App);
 
@@ -22,14 +25,13 @@ app.use(VueAxios, axios);
 app.use(router);
 
 app.use(PrimeVue, {ripple: true});
+app.use(ElementPlus);
+app.use(ElementTiptapPlugin)
 
-app.directive('tooltip', Tooltip);
-app.directive('badge', BadgeDirective);
-app.directive('ripple', Ripple);
-app.directive('styleclass', StyleClass);
-app.directive('focustrap', FocusTrap);
-app.directive('animateonscroll', AnimateOnScroll);
+app.component('Breadcrumb', Breadcrumb);
 
-app.component('menubar', Menubar)
+for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
+    app.component(key, component)
+}
 
 app.mount("#app")
