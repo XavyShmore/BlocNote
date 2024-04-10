@@ -5,6 +5,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
 
+
 @app.route('/register', methods=['POST'])
 def register():
     data = request.json
@@ -21,6 +22,7 @@ def register():
 
     return jsonify({"message": "User registered", "user_id": user_id}), 201
 
+
 @app.route('/login', methods=['POST'])
 def login():
     data = request.json
@@ -36,6 +38,7 @@ def login():
     else:
         return jsonify({"message": "Invalid email or password"}), 401
 
+
 @app.route('/user/<int:user_id>/name', methods=['POST'])
 def set_user_name(user_id):
     data = request.json
@@ -47,7 +50,8 @@ def set_user_name(user_id):
     update_user_name(user_id, name)
     return jsonify({"message": "Username updated"}), 201
 
-@app.route('/user/<int:user_id>/bio', methods=['POST'])
+
+@app.route('/user/<int:user_id>/bio', methods=['PUT'])
 def set_user_bio(user_id):
     data = request.json
     bio = data.get('bio')
@@ -58,6 +62,7 @@ def set_user_bio(user_id):
     update_user_bio(user_id, bio)
     return jsonify({"message": "User bio updated"}), 200
 
+
 @app.route('/user/<int:user_id>', methods=['GET'])
 def get_user_profile(user_id):
     user = get_user_profile(user_id)
@@ -66,10 +71,12 @@ def get_user_profile(user_id):
     else:
         return jsonify({"message": "User not found"}), 404
 
+
 @app.route('/user/<int:user_id>/notes', methods=['GET'])
 def get_user_notes(user_id):
     notes = get_notes_of_user(user_id)
     return jsonify(notes), 200
+
 
 @app.route('/notebooks', methods=['POST'])
 def create_notebook():
@@ -82,6 +89,7 @@ def create_notebook():
 
     notebook_id = insert_notebook(title, owner_id)
     return jsonify({"message": "Notebook created successfully", "notebook_id": notebook_id}), 201
+
 
 @app.route('/notebooks/<int:notebook_id>', methods=['PUT'])
 def rename_notebook(notebook_id):
@@ -96,6 +104,7 @@ def rename_notebook(notebook_id):
     else:
         return jsonify({"message": "Notebook not found"}), 404
 
+
 @app.route('/notebooks/<int:notebook_id>', methods=['DELETE'])
 def delete_notebook(notebook_id):
     if remove_notebook(notebook_id):
@@ -103,15 +112,18 @@ def delete_notebook(notebook_id):
     else:
         return jsonify({"message": "Notebook not found"}), 404
 
+
 @app.route('/notebooks/<int:notebook_id>/notes', methods=['GET'])
 def get_notes_from_notebook(notebook_id):
     notes = get_notes_in_notebook(notebook_id)
     return jsonify(notes), 200
 
+
 @app.route('/notebooks/<int:notebook_id>/notes/<int:note_id>', methods=['POST'])
 def add_note_to_notebook(notebook_id, note_id):
     add_note_to_a_notebook(note_id, notebook_id)
     return jsonify({"message": "Note added to notebook successfully"}), 201
+
 
 @app.route('/notes', methods=['POST'])
 def create_note():
@@ -124,6 +136,7 @@ def create_note():
     note_id = insert_note(title)
     return jsonify({"message": "Note created", "note_id": note_id}), 201
 
+
 @app.route('/notes/<int:note_id>', methods=['GET'])
 def get_note(note_id):
     note = get_note_details(note_id)
@@ -132,10 +145,12 @@ def get_note(note_id):
     else:
         return jsonify({"message": "Note not found"}), 404
 
+
 @app.route('/notes/<int:note_id>', methods=['DELETE'])
 def delete_note(note_id):
     remove_note(note_id)
     return jsonify({"message": "Note deleted"}), 204
+
 
 @app.route('/notes/<int:note_id>/versions', methods=['POST'])
 def save_note_content(note_id):
@@ -149,6 +164,7 @@ def save_note_content(note_id):
     create_note_version(note_id, content, editor_id)
     return jsonify({"message": "Note version saved"}), 201
 
+
 @app.route('/notes/<int:note_id>/versions', methods=['GET'])
 def get_note_versions(note_id):
     versions = get_versions_of_note(note_id)
@@ -156,6 +172,7 @@ def get_note_versions(note_id):
         return jsonify(versions), 200
     else:
         return jsonify({"message": "No versions found for this note"}), 404
+
 
 @app.route('/notes/<int:note_id>/versions/<string:date>', methods=['GET'])
 def get_note_version_by_date(note_id, date):
@@ -170,6 +187,7 @@ def get_note_version_by_date(note_id, date):
     else:
         return jsonify({"message": "No version found for this date"}), 404
 
+
 @app.route('/notes/<int:note_id>/owners', methods=['GET'])
 def get_note_owners(note_id):
     data = request.json
@@ -181,10 +199,12 @@ def get_note_owners(note_id):
     owners = get_note_access_users(note_id, current_user_id)
     return jsonify(owners), 200
 
+
 @app.route('/notes/<int:note_id>/owners/<int:user_id>', methods=['POST'])
 def add_note_owner(note_id, user_id):
     give_user_access_to_note(note_id, user_id)
-    return 201
+    return jsonify({"User given access to note"}), 201
+
 
 if __name__ == '__main__':
     app.run(debug=True)
