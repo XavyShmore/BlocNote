@@ -14,7 +14,12 @@ VALUES
 
 INSERT INTO notes (title)
 VALUE ('This will be a greate note');
+CALL create_note('This will be a great note', 1);
+CALL create_note('J\'aime ta grand mère !!!', 3);
+CALL create_note('Pipi, caca, popo: la meilleure des chansons', 3);
 
-INSERT INTO user_as_access (user_id, note_id)
-VALUES (1,1),
-       (2,1);
+INSERT INTO user_has_access (user_id, note_id)
+VALUES (2,1),
+       (3,1),
+       (4,1),
+       (5,2);

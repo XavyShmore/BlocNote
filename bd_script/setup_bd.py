@@ -46,8 +46,11 @@ execute_sql_file('DestroyDB.sql')
 # Create new shema
 execute_sql_file('InitializeDB.sql')
 
-# Add trigers
+# Add triggers
 execute_sql_file('addTriggers.sql')
+
+# Add procedure
+execute_sql_file('createNote.sql')
 
 # Populate the DB
 execute_sql_file('populate.sql')
