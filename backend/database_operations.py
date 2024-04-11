@@ -34,6 +34,17 @@ def register_user(email, password_hash, name, bio):
     return user_id
 
 
+def user_exists(email, name):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    query = "SELECT COUNT(*) FROM users WHERE email = %s OR name = %s"
+    cursor.execute(query, (email, name))
+    count = cursor.fetchone()[0]
+    cursor.close()
+    conn.close()
+    return count > 0
+
+
 def get_user_by_email(email):
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
@@ -289,11 +300,21 @@ def get_note_access_users(note_id, current_user_id):
     return owners
 
 
-def give_user_access_to_note(note_id, user_id):
+def give_user_access_to_note(note_id, email):
     conn = get_db_connection()
     cursor = conn.cursor()
-    query = "INSERT INTO user_has_access (note_id, user_id) VALUES (%s, %s)"
-    cursor.execute(query, (note_id, user_id))
-    conn.commit()
+
+    query = "SELECT id FROM users WHERE email = %s"
+    cursor.execute(query, (email,))
+    user_result = cursor.fetchone()
+
+    if user_result:
+        user_id = user_result[0]
+        access_query = "INSERT INTO user_has_access (note_id, user_id) VALUES (%s, %s)"
+        cursor.execute(access_query, (note_id, user_id))
+        conn.commit()
+    else:
+        raise ValueError("User not found")
+
     cursor.close()
     conn.close()
