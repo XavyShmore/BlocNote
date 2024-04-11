@@ -71,10 +71,16 @@
       const submitForm = () => {
         signupFormRef.value.validate((valid) => {
           if (valid) {
+            console.log(signupForm);
+            resetForm();
             // TODO: Implement signup logic here
             // After successful signup, possibly redirect or inform the user
           }
         });
+      };
+
+      const resetForm = () => {
+        signupFormRef.value.resetFields();
       };
   
       return {

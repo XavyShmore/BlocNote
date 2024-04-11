@@ -1,4 +1,4 @@
-import jwt_decode from 'jwt-decode';
+import { jwtDecode } from 'jwt-decode';
 
 export const getUserId = () => {
     const token = localStorage.getItem('token');
@@ -6,7 +6,7 @@ export const getUserId = () => {
         return null;
     }
 
-    const decoded_token = jwt_decode(token);
+    const decoded_token = jwtDecode(token);
     return decoded_token.user_id;
 };
 

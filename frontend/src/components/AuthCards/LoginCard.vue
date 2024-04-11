@@ -25,10 +25,13 @@
   <script>
   import { reactive, ref } from 'vue';
   import { ElForm } from 'element-plus';
+  import { ElMessage } from 'element-plus';
+  import { login } from '@/api.js';
   
   export default {
     components: {
-        ElForm
+        ElForm,
+        ElMessage
     },
     setup() {
       const loginFormRef = ref(null);
@@ -48,9 +51,20 @@
         ],
       });
 
+      const attemptLogin = async () => {
+        const response = await login(loginForm.email, loginForm.password);
+        if (response?.success === true) {
+          alert('Login successful');
+        } else {
+          alert('Login failed');
+        }
+      };
+
       const submitForm = () => {
       loginFormRef.value.validate((valid) => {
         if (valid) {
+          attemptLogin();
+          
         //   TODO : implement login success behavior
         //   TODO : implement invalid credentials logic
         //   if (loginSuccess) {
