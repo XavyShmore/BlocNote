@@ -20,7 +20,7 @@
 <script>
 import { defineComponent } from 'vue';
 import { ElButton } from 'element-plus'
-import TipTapEditor from '@/components/Editor/TipTapEditor.vue'
+import TipTapEditor from '@/components/editor/TipTapEditor.vue'
 
 export default defineComponent({
   components: {
