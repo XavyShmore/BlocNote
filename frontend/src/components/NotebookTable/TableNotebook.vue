@@ -2,16 +2,16 @@
     <el-table :data="tableData" row-key="id" class="tableContent">
         <el-table-column prop="name" label="Name"></el-table-column>
         <el-table-column prop="date" label="Creation Date" sortable></el-table-column>
-        <el-table-column prop="numNote" label="Number of Notes" sortable></el-table-column>
+        <el-table-column prop="modifDate" label="Last Modification" sortable></el-table-column>
         <el-table-column fixed="right" label="Action">
             <template #default="{row}">
-                <el-button type="primary" @click="handleOpen(row)">Edit</el-button>
+                <el-button type="primary" @click="handleOpen(row)">Open</el-button>
                 <el-button type="danger" @click.prevent="deleteRow(row)">Delete</el-button>
             </template>
         </el-table-column>
     </el-table>
     <el-button class="mt-4" style="width: 100%" @click="onAddItem">
-        Add Notebook
+        Add Note
     </el-button>
 </template>
 
@@ -103,6 +103,6 @@ import { ElTable } from 'element-plus';
 
 <style>
 .tableContent {
-  height: 70vh;
+  height: 72vh;
 }
 </style>

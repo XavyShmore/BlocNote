@@ -22,7 +22,7 @@ const routes = [
     component: Lists
   },
   {
-    path: '/notebook/:',
+    path: '/notebook/:notebookId',
     name: 'notebook',
     component: Notebook
   },

@@ -1,16 +1,22 @@
 <template>
     <div class="Lists">
-      <h1>This is a profile Lists</h1>
+      <PageTitle fontSize="4em">
+        <template v-slot:title>
+          Lists
+        </template>
+      </PageTitle>
       <TableLists/>
     </div>
 </template>
 
 <script>
 import TableLists from '@/components/ListsTable/TableLists.vue'
+import PageTitle from '@/components/PageHeader/PageTitle.vue';
 
 export default {
   components: {
-    TableLists
+    TableLists,
+    PageTitle
   }
 }
 
