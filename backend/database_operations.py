@@ -24,7 +24,7 @@ def get_db_connection():
 
 def register_user(email, password_hash, name, bio):
     conn = get_db_connection()
-    cursor = get_db_connection().cursor()
+    cursor = conn.cursor()
     query = "INSERT INTO users (email, passwordHash, name, bio) VALUES (%s, %s, %s, %s)"
     cursor.execute(query, (email, password_hash, name, bio))
     user_id = cursor.lastrowid
@@ -204,7 +204,6 @@ def get_notes_in_notebook(notebook_id):
     cursor.close()
     conn.close()
     return notes
-
 
 
 def insert_note(title):

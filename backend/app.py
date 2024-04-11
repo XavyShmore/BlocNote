@@ -54,7 +54,7 @@ def login():
             return jsonify({"message": "Invalid email format"}), 400
 
         user = get_user_by_email(email)
-        if user and check_password_hash(user['password_hash'], password):
+        if user and check_password_hash(user['passwordHash'], password):
             token = jwt.encode({
                 'user_id': user['id']
             }, app.config['SECRET_KEY'])
