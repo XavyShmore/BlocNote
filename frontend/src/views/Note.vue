@@ -13,18 +13,18 @@
         </div>
     </div>
     <div class="content">
-        <tipTapEditor/>
+        <TipTapEditor/>
     </div>
 </template>
 
 <script>
 import { defineComponent } from 'vue';
 import { ElButton } from 'element-plus'
-import tipTapEditor from '@/components/editor/tipTapEditor.vue'
+import TipTapEditor from '@/components/editor/TipTapEditor.vue'
 
 export default defineComponent({
   components: {
-    tipTapEditor,
+    TipTapEditor,
     ElButton
   },
 });
@@ -41,7 +41,7 @@ export default defineComponent({
 
 .content {
     height: 70vh;
-    padding-top: 1%;
+    margin-top: 1%;
 }
 
 .title {

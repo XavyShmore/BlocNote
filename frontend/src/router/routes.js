@@ -1,13 +1,13 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import Home from '@/views/Home.vue'
-import Profile from '@/views/Profile.vue'
 import Lists from '@/views/Lists.vue'
+import Notebook from '@/views/Notebook.vue'
 import Note from '@/views/Note.vue'
 import Login from '@/views/Login.vue'
 
 const routes = [
   {
-    path: '/',
+    path: '/login',
     name: 'login',
     component: Login
   },
@@ -17,14 +17,14 @@ const routes = [
     component: Home
   },
   {
-    path: '/profile/:userId',
-    name: 'profile',
-    component: Profile
-  },
-  {
-    path: '/lists/:listId',
+    path: '/lists',
     name: 'lists',
     component: Lists
+  },
+  {
+    path: '/notebook/:notebookId',
+    name: 'notebook',
+    component: Notebook
   },
   {
     path: '/notes/:noteId',

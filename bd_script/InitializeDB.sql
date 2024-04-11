@@ -45,3 +45,5 @@ CREATE TABLE notebook_contains(
     FOREIGN KEY (notebook_id) REFERENCES notebooks(id) ON DELETE CASCADE,
     UNIQUE (note_id, notebook_id)
 );
+
+ALTER TABLE users MODIFY passwordHash VARCHAR(255);
