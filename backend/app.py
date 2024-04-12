@@ -68,7 +68,7 @@ def login():
     except Exception as e:
         return jsonify({"message": f"Login failed: {str(e)}"}), 500
 
-@app.route('/user/<int:user_id>/name', methods=['POST'])
+@app.route('/user/<int:user_id>/name', methods=['PUT'])
 def set_user_name(user_id):
     try:
         data = request.json
@@ -101,7 +101,7 @@ def set_user_bio(user_id):
 @app.route('/user/<int:user_id>', methods=['GET'])
 def get_user_profile(user_id):
     try:
-        user = get_user_profile(user_id)
+        user = get_user_profile_details(user_id)
         if user:
             return jsonify(user), 200
         else:
@@ -119,20 +119,20 @@ def get_user_notes(user_id):
         return jsonify({"message": f"Get user notes failed: {str(e)}"}), 500
 
 
-@app.route('/notebooks', methods=['POST'])
-def create_notebook():
+@app.route('/<int:user_id>/notebooks', methods=['POST'])
+def create_notebook(user_id):
     try:
         data = request.json
         title = data.get('title')
-        owner_id = data.get('owner_id')
 
-        if not title or not owner_id:
-            return jsonify({"message": "Title and owner ID are required"}), 400
+        if not title:
+            return jsonify({"message": "Title is required"}), 400
 
-        notebook_id = insert_notebook(title, owner_id)
+        notebook_id = insert_notebook(title, user_id)
         return jsonify({"message": "Notebook created successfully", "notebook_id": notebook_id}), 201
     except Exception as e:
         return jsonify({"message": f"Create notebook failed: {str(e)}"}), 500
+
 
 
 @app.route('/<int:user_id>/notebooks', methods=['GET'])
@@ -199,8 +199,8 @@ def add_note_to_notebook(notebook_id, note_id):
         return jsonify({"message": f"Add note to notebook failed: {str(e)}"}), 500
 
 
-@app.route('/notes', methods=['POST'])
-def create_note():
+@app.route('/<int:user_id>/notes', methods=['POST'])
+def create_note(user_id):
     try:
         data = request.json
         title = data.get('title')
@@ -208,7 +208,7 @@ def create_note():
         if not title:
             return jsonify({"message": "Title is required"}), 400
 
-        note_id = insert_note(title)
+        note_id = insert_note(title, user_id)
         return jsonify({"message": "Note created", "note_id": note_id}), 201
     except Exception as e:
         return jsonify({"message": f"Create note failed: {str(e)}"}), 500

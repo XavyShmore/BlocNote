@@ -63,7 +63,7 @@ export const login = async (email, password) => {
 
 export const setUserName = async (userId, name) => {
     const response = await fetch(`${API_URL}/user/${userId}/name`, {
-        method: 'POST',
+        method: 'PUT',
         headers: {
             'Content-Type': 'application/json',
         },
@@ -105,20 +105,20 @@ export const getUserNotes = async (userId) => {
     return await response.json();
 };
 
-export const createNotebook = async (title, ownerId) => {
-    const response = await fetch(`${API_URL}/notebooks`, {
+export const createNotebook = async (title, userId) => {
+    const response = await fetch(`${API_URL}/${userId}/notebooks`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
         },
         body: JSON.stringify({
             title,
-            owner_id: ownerId,
         }),
     });
 
     return await response.json();
 };
+
 
 export const getNotebooks = async (userId) => {
     const response = await fetch(`${API_URL}/${userId}/notebooks`, {
@@ -174,8 +174,8 @@ export const addNoteToNotebook = async (notebookId, noteId) => {
     return await response.json();
 };
 
-export const createNote = async (title) => {
-    const response = await fetch(`${API_URL}/notes`, {
+export const createNote = async (title, userId) => {
+    const response = await fetch(`${API_URL}/${userId}/notes`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -187,6 +187,7 @@ export const createNote = async (title) => {
 
     return await response.json();
 };
+
 
 export const getNote = async (noteId) => {
     const response = await fetch(`${API_URL}/notes/${noteId}`, {

@@ -76,7 +76,7 @@ def update_user_bio(user_id, bio):
     conn.close()
 
 
-def get_user_profile(user_id):
+def get_user_profile_details(user_id):
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
     query = "SELECT name, bio FROM users WHERE id = %s"
@@ -206,16 +206,18 @@ def get_notes_in_notebook(notebook_id):
     return notes
 
 
-def insert_note(title):
+def insert_note(title, user_id):
     conn = get_db_connection()
     cursor = conn.cursor()
-    query = "INSERT INTO notes (title) VALUES (%s)"
-    cursor.execute(query, (title,))
-    note_id = cursor.lastrowid
-    conn.commit()
-    cursor.close()
-    conn.close()
-    return note_id
+    try:
+        cursor.callproc('create_note', [title, user_id])
+        conn.commit()
+        cursor.close()
+        conn.close()
+    except Exception as e:
+        cursor.close()
+        conn.close()
+        raise e
 
 
 def get_note_details(note_id):
@@ -225,10 +227,10 @@ def get_note_details(note_id):
         SELECT
             notes.id,
             notes.title,
-            SELECT content FROM versions WHERE note_id = notes.id ORDER BY creation DESC LIMIT 1,
+            (SELECT content FROM versions WHERE note_id = notes.id ORDER BY creation DESC LIMIT 1) AS content,
             MIN(versions.creation) AS created,
             MAX(versions.creation) AS last_modified,
-            (SELECT users.name FROM users WHERE users.id = (SELECT editor_id FROM versions WHERE note_id = notes.id ORDER BY creation DESC LIMIT 1)) AS user_last_modified
+            (SELECT users.name FROM users JOIN versions ON users.id = versions.editor_id WHERE versions.note_id = notes.id ORDER BY versions.creation DESC LIMIT 1) AS user_last_modified
         FROM notes
         LEFT JOIN versions ON notes.id = versions.note_id
         WHERE notes.id = %s
@@ -239,6 +241,7 @@ def get_note_details(note_id):
     cursor.close()
     conn.close()
     return note
+
 
 
 def create_note_version(note_id, content, editor_id):
