@@ -49,7 +49,7 @@ const routes = [
     }
   },
   {
-    path: '/notes/:noteId',
+    path: '/note/:noteId',
     name: 'note',
     component: Note,
     meta: {

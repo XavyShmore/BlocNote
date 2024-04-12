@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <HeaderBar v-if="showHeader"/>
+    <HeaderBar v-if="showHeader" :title="currentRouteName"/>
     <RouterView/>
   </div>
 </template>
@@ -12,6 +12,9 @@ export default {
   computed: {
     showHeader() {
       return !this.$route.meta.hideHeader;
+    },
+    currentRouteName() {
+      return this.$route.name;
     }
   },
   components: {

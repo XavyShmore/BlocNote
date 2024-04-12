@@ -9,6 +9,7 @@ export const getUserId = () => {
     }
 
     const decoded_token = jwtDecode(token);
+    console.log(decoded_token)
     return decoded_token.user_id;
 };
 
