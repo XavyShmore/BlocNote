@@ -1,29 +1,21 @@
 <template>
   <div id="app">
-    <!-- <div style="display: flex; justify-content: center;">
-      <nav>
-        <router-link to="/"> Home </router-link>
-      </nav>
-      <nav>
-        <router-link to="/profile/:id"> Profile </router-link>
-      </nav>
-      <nav>
-        <router-link to="/lists/:id"> Lists </router-link>
-      </nav>
-      <nav>
-        <router-link to="/notes/:id"> Notes </router-link>
-      </nav>
-    </div> -->
-    <HeroPage/>
+    <HeaderBar v-if="showHeader"/>
+    <RouterView/>
   </div>
 </template>
 
 <script>
-import HeroPage from '@/components/HeroPage.vue'
+import HeaderBar from '@/components/HeaderBar.vue'
 
 export default {
+  computed: {
+    showHeader() {
+      return !this.$route.meta.hideHeader;
+    }
+  },
   components: {
-    HeroPage
+    HeaderBar
   }
 }
 

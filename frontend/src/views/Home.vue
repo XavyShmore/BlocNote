@@ -15,7 +15,7 @@
         <li><a href="/notes/id">Link 3</a></li>
         <li><a href="/notes/id">Link 4</a></li>
         <li><a href="/notes/id">Link 5</a></li>
-        <li><a href="/notes/id">Voir plus +</a></li>
+        <li><a href="/lists">Voir plus +</a></li>
       </ul>
     </div>
     <div class="myLists">
@@ -26,7 +26,7 @@
         <li><a href="/notebook/id">Link 3</a></li>
         <li><a href="/notebook/id">Link 4</a></li>
         <li><a href="/notebook/id">Link 5</a></li>
-        <li><a href="/notebook/id">Voir plus +</a></li>
+        <li><a href="/lists">Voir plus +</a></li>
       </ul>
     </div>
   </div>

@@ -32,8 +32,13 @@
   
   <script>
   import { reactive, ref } from 'vue';
+  import { register } from '@/api';
+  import { ElMessage } from 'element-plus';
   
   export default {
+    components: {
+      ElMessage
+    },
     setup() {
       const signupFormRef = ref(null);
       const signupForm = reactive({
@@ -67,14 +72,37 @@
           { validator: validateConfirmPassword, trigger: 'blur' }
         ],
       });
+
+      const successMessage = () => {
+        ElMessage({
+          message: 'Sign up successful',
+          type: 'success'
+        });
+      };
+
+      const errorMessage = () => {
+        ElMessage({
+          message: 'Sign up failed',
+          type: 'error'
+        });
+      };
+
+
+      const attemptSignUp = async () => {
+        const response = await register(signupForm.email, signupForm.password, signupForm.name);
+        console.log(response)
+        if (response?.success === true) {
+          successMessage();
+        } else {
+          errorMessage();
+        }
+      };
   
       const submitForm = () => {
         signupFormRef.value.validate((valid) => {
           if (valid) {
-            console.log(signupForm);
+            attemptSignUp();
             resetForm();
-            // TODO: Implement signup logic here
-            // After successful signup, possibly redirect or inform the user
           }
         });
       };

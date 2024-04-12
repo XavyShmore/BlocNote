@@ -1,5 +1,7 @@
 import { jwtDecode } from 'jwt-decode';
 
+const API_URL = 'http://localhost:5000';
+
 export const getUserId = () => {
     const token = localStorage.getItem('token');
     if (!token) {
@@ -11,10 +13,11 @@ export const getUserId = () => {
 };
 
 export const register = async (email, password, name) => {
-    const response = await fetch('/register', {
+    const response = await fetch(`${API_URL}/register`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
+            "mode": "no-cors", "access-control-allow-origin": "*"
         },
         body: JSON.stringify({
             email,
@@ -35,10 +38,12 @@ export const register = async (email, password, name) => {
 
 
 export const login = async (email, password) => {
-    const response = await fetch('/login', {
+    const response = await fetch(`${API_URL}/login`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
+            "mode": "no-cors", 
+            "access-control-allow-origin": "*"
         },
         body: JSON.stringify({
             email,
@@ -57,7 +62,7 @@ export const login = async (email, password) => {
 };
 
 export const setUserName = async (userId, name) => {
-    const response = await fetch(`/user/${userId}/name`, {
+    const response = await fetch(`${API_URL}/user/${userId}/name`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -71,7 +76,7 @@ export const setUserName = async (userId, name) => {
 };
 
 export const setUserBio = async (userId, bio) => {
-    const response = await fetch(`/user/${userId}/bio`, {
+    const response = await fetch(`${API_URL}/user/${userId}/bio`, {
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json',
@@ -85,7 +90,7 @@ export const setUserBio = async (userId, bio) => {
 };
 
 export const getUserProfile = async (userId) => {
-    const response = await fetch(`/user/${userId}`, {
+    const response = await fetch(`${API_URL}/user/${userId}`, {
         method: 'GET',
     });
 
@@ -93,7 +98,7 @@ export const getUserProfile = async (userId) => {
 };
 
 export const getUserNotes = async (userId) => {
-    const response = await fetch(`/user/${userId}/notes`, {
+    const response = await fetch(`${API_URL}/user/${userId}/notes`, {
         method: 'GET',
     });
 
@@ -101,7 +106,7 @@ export const getUserNotes = async (userId) => {
 };
 
 export const createNotebook = async (title, ownerId) => {
-    const response = await fetch('/notebooks', {
+    const response = await fetch(`${API_URL}/notebooks`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -116,7 +121,7 @@ export const createNotebook = async (title, ownerId) => {
 };
 
 export const getNotebooks = async (userId) => {
-    const response = await fetch(`/${userId}/notebooks`, {
+    const response = await fetch(`${API_URL}/${userId}/notebooks`, {
         method: 'GET',
     });
 
@@ -124,7 +129,7 @@ export const getNotebooks = async (userId) => {
 };
 
 export const getNotebook = async (notebookId) => {
-    const response = await fetch(`/notebooks/${notebookId}`, {
+    const response = await fetch(`${API_URL}/notebooks/${notebookId}`, {
         method: 'GET',
     });
 
@@ -132,7 +137,7 @@ export const getNotebook = async (notebookId) => {
 };
 
 export const renameNotebook = async (notebookId, newTitle) => {
-    const response = await fetch(`/notebooks/${notebookId}`, {
+    const response = await fetch(`${API_URL}/notebooks/${notebookId}`, {
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json',
@@ -146,7 +151,7 @@ export const renameNotebook = async (notebookId, newTitle) => {
 };
 
 export const deleteNotebook = async (notebookId) => {
-    const response = await fetch(`/notebooks/${notebookId}`, {
+    const response = await fetch(`${API_URL}/notebooks/${notebookId}`, {
         method: 'DELETE',
     });
 
@@ -154,7 +159,7 @@ export const deleteNotebook = async (notebookId) => {
 };
 
 export const getNotesFromNotebook = async (notebookId) => {
-    const response = await fetch(`/notebooks/${notebookId}/notes`, {
+    const response = await fetch(`${API_URL}/notebooks/${notebookId}/notes`, {
         method: 'GET',
     });
 
@@ -162,7 +167,7 @@ export const getNotesFromNotebook = async (notebookId) => {
 };
 
 export const addNoteToNotebook = async (notebookId, noteId) => {
-    const response = await fetch(`/notebooks/${notebookId}/notes/${noteId}`, {
+    const response = await fetch(`${API_URL}/notebooks/${notebookId}/notes/${noteId}`, {
         method: 'POST',
     });
 
@@ -170,7 +175,7 @@ export const addNoteToNotebook = async (notebookId, noteId) => {
 };
 
 export const createNote = async (title) => {
-    const response = await fetch('/notes', {
+    const response = await fetch(`${API_URL}/notes`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -184,7 +189,7 @@ export const createNote = async (title) => {
 };
 
 export const getNote = async (noteId) => {
-    const response = await fetch(`/notes/${noteId}`, {
+    const response = await fetch(`${API_URL}/notes/${noteId}`, {
         method: 'GET',
     });
 
@@ -192,7 +197,7 @@ export const getNote = async (noteId) => {
 };
 
 export const deleteNote = async (noteId) => {
-    const response = await fetch(`/notes/${noteId}`, {
+    const response = await fetch(`${API_URL}/notes/${noteId}`, {
         method: 'DELETE',
     });
 
@@ -200,7 +205,7 @@ export const deleteNote = async (noteId) => {
 };
 
 export const saveNoteContent = async (noteId, content, editorId) => {
-    const response = await fetch(`/notes/${noteId}/versions`, {
+    const response = await fetch(`${API_URL}/notes/${noteId}/versions`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -215,7 +220,7 @@ export const saveNoteContent = async (noteId, content, editorId) => {
 };
 
 export const getNoteVersions = async (noteId) => {
-    const response = await fetch(`/notes/${noteId}/versions`, {
+    const response = await fetch(`${API_URL}/notes/${noteId}/versions`, {
         method: 'GET',
     });
 
@@ -223,7 +228,7 @@ export const getNoteVersions = async (noteId) => {
 };
 
 export const getNoteVersionByDate = async (noteId, date) => {
-    const response = await fetch(`/notes/${noteId}/versions/${date}`, {
+    const response = await fetch(`${API_URL}/notes/${noteId}/versions/${date}`, {
         method: 'GET',
     });
 
@@ -231,7 +236,7 @@ export const getNoteVersionByDate = async (noteId, date) => {
 };
 
 export const getNoteOwners = async (noteId, currentUserId) => {
-    const response = await fetch(`/notes/${noteId}/owners`, {
+    const response = await fetch(`${API_URL}/notes/${noteId}/owners`, {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
@@ -245,7 +250,7 @@ export const getNoteOwners = async (noteId, currentUserId) => {
 };
 
 export const addNoteOwner = async (noteId, userId) => {
-    const response = await fetch(`/notes/${noteId}/owners/${userId}`, {
+    const response = await fetch(`${API_URL}/notes/${noteId}/owners/${userId}`, {
         method: 'POST',
     });
 

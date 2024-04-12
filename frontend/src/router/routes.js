@@ -7,29 +7,55 @@ import Login from '@/views/Login.vue'
 
 const routes = [
   {
+    path: '/',
+    redirect: () => {
+      return { name: 'home' };
+    }
+  },
+  {
     path: '/login',
     name: 'login',
-    component: Login
+    component: Login,
+    meta: {
+      isAuth: false,
+      hideHeader: true
+    }
   },
   {  
     path: '/home',
     name: 'home',
-    component: Home
+    component: Home,
+    meta: {
+      isAuth: true,
+      hideHeader: false
+    }
   },
   {
     path: '/lists',
     name: 'lists',
-    component: Lists
+    component: Lists,
+    meta: {
+      isAuth: true,
+      hideHeader: false
+    }
   },
   {
     path: '/notebook/:notebookId',
     name: 'notebook',
-    component: Notebook
+    component: Notebook,
+    meta: {
+      isAuth: true,
+      hideHeader: false
+    }
   },
   {
     path: '/notes/:noteId',
     name: 'note',
-    component: Note
+    component: Note,
+    meta: {
+      isAuth: true,
+      hideHeader: false
+    }
   },
 ]
 
@@ -37,4 +63,20 @@ export const router = createRouter({
   history: createWebHistory(),
   routes,
 })
+
+router.beforeEach((to, from, next) => {
+  if (to.matched.some(record => record.meta.isAuth)) {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      next({ name: 'login' });
+    } else {
+      next();
+    }
+  } else {
+    next();
+  }
+});
+
+
+
 
