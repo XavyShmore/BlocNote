@@ -1,7 +1,7 @@
 <template>
   <el-page-header @back="goBack" class="pageHeader">
     <template #content>
-      <span class="text-large font-600 mr-3"> Title </span>
+      <span class="text-large font-600 mr-3"> {{ title }} </span>
     </template>
     <template>
         <el-divider style="margin-top: 12px;"/>
@@ -16,6 +16,12 @@ export default {
     components: {
         ElPageHeader,
         ElDivider
+    },
+    props: {
+        title: {
+            type: String,
+            required: true
+        }
     },
     setup() {
         const goBack = () => {

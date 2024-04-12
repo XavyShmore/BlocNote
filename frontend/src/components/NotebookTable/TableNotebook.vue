@@ -1,6 +1,20 @@
 <template>
     <el-table :data="tableData" row-key="id" class="tableContent">
-        <el-table-column prop="name" label="Name"></el-table-column>
+        <el-table-column prop="name" label="Name">
+        <template #default="{row}">
+                <div style="display: flex; justify-content: space-between;">
+                    <div v-if="!row.isEditing">
+                        {{ row.name }}
+                    </div>
+                    <el-input v-else v-model="row.name" @blur="finishEdit(row)"/>
+                    <el-button v-if="!row.isEditing" @click="editRow(row)">
+                        <el-icon>
+                            <Edit/>
+                        </el-icon>
+                    </el-button>
+                </div>
+            </template>
+        </el-table-column>
         <el-table-column prop="date" label="Creation Date" sortable></el-table-column>
         <el-table-column prop="modifDate" label="Last Modification" sortable></el-table-column>
         <el-table-column fixed="right" label="Action">
@@ -25,55 +39,35 @@ import { ElTable } from 'element-plus';
         },
         setup()  {
             const tableData = reactive([
-            {
-                name: 'Tom',
-                date: '2016-05-03',
-                numNote: 3
-            },
-            {
-            name: 'Milo', date: '2018-10-10', numNote: 2
-            },
-            {
-            name: 'Alice', date: '2016-05-16', numNote: 9
-            },
-            {
-            name: 'Nora', date: '2018-10-15', numNote: 1
-            },
-            {
-            name: 'Charlie', date: '2017-11-07', numNote: 2
-            },
-            {
-            name: 'Hannah', date: '2018-08-16', numNote: 7
-            },
-            {
-            name: 'Riley', date: '2015-01-23', numNote: 3
-            },
-            {
-            name: 'Fiona', date: '2015-07-25', numNote: 7
-            },
-            {
-            name: 'Kevin', date: '2019-05-30', numNote: 8
-            },
-            {
-            name: 'Oscar', date: '2016-08-08', numNote: 10
-            },
-            {
-            name: 'Quinn', date: '2018-06-25', numNote: 1
-            },
-            {
-            name: 'Bob', date: '2019-11-16', numNote: 1
-            },
-            {
-            name: 'Luna', date: '2018-07-19', numNote: 7
-            },
-            {
-            name: 'Sam', date: '2017-06-25', numNote: 7
-            },
-            {
-            name: 'Julia', date: '2019-03-08', numNote: 5
-            }
-
+                { name: 'Alice', date: '2017-01-15', modifDate: '2022-07-20', isEditing: false },
+                { name: 'Bob', date: '2015-09-23', modifDate: '2023-03-11', isEditing: false },
+                { name: 'Charlie', date: '2018-05-10', modifDate: '2023-01-05', isEditing: false },
+                { name: 'Diana', date: '2016-11-30', modifDate: '2022-08-25', isEditing: false },
+                { name: 'Eva', date: '2019-04-18', modifDate: '2023-02-19', isEditing: false },
+                { name: 'Frank', date: '2015-12-07', modifDate: '2022-12-15', isEditing: false },
+                { name: 'Grace', date: '2017-07-21', modifDate: '2022-06-30', isEditing: false },
+                { name: 'Henry', date: '2016-03-13', modifDate: '2023-04-22', isEditing: false },
+                { name: 'Ivy', date: '2018-08-29', modifDate: '2022-11-04', isEditing: false },
+                { name: 'Jack', date: '2019-06-01', modifDate: '2023-05-17', isEditing: false },
+                { name: 'Kathy', date: '2015-02-20', modifDate: '2022-09-10', isEditing: false },
+                { name: 'Liam', date: '2017-12-15', modifDate: '2022-10-23', isEditing: false },
+                { name: 'Mona', date: '2018-01-30', modifDate: '2022-05-29', isEditing: false },
+                { name: 'Nolan', date: '2016-06-19', modifDate: '2023-08-21', isEditing: false },
+                { name: 'Olivia', date: '2019-03-03', modifDate: '2022-07-07', isEditing: false },
+                { name: 'Pete', date: '2015-08-08', modifDate: '2023-03-18', isEditing: false },
+                { name: 'Quinn', date: '2017-10-17', modifDate: '2022-04-15', isEditing: false },
+                { name: 'Rose', date: '2016-04-05', modifDate: '2023-01-20', isEditing: false },
+                { name: 'Steve', date: '2018-09-25', modifDate: '2022-12-12', isEditing: false },
+                { name: 'Tina', date: '2019-07-11', modifDate: '2023-06-02', isEditing: false }
             ])
+
+            const editRow = (row) => {
+                row.isEditing = true;
+            };
+
+            const finishEdit = (row) => {
+                row.isEditing = false;
+            };
 
             const deleteRow = (objectToDelete) => {
                 const index = tableData.indexOf(objectToDelete);
@@ -87,14 +81,18 @@ import { ElTable } from 'element-plus';
             }
 
             const onAddItem = () => {
+                const today = new Date();
+                const formattedDate = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+
                 tableData.push({
-                    name: 'New Item',
-                    date: '2021-06-01',
-                    numNote: 0
+                    name: 'New Note',
+                    date: formattedDate,
+                    modifDate: formattedDate,
+                    isEditing: false
                 })
             }
 
-            return { tableData, deleteRow, handleOpen, onAddItem }
+            return { tableData, deleteRow, handleOpen, onAddItem, editRow, finishEdit }
 
         }
     }

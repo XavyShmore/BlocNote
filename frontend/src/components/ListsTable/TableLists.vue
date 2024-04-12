@@ -1,5 +1,5 @@
 <template>
-    <el-table border :data="tableData" row-key="id" class="tableContent">
+    <el-table :data="tableData" row-key="id" class="tableContent">
         <el-table-column prop="name" label="Name">
             <template #default="{row}">
                 <div style="display: flex; justify-content: space-between;">
@@ -7,7 +7,11 @@
                         {{ row.name }}
                     </div>
                     <el-input v-else v-model="row.name" @blur="finishEdit(row)"/>
-                    <el-button v-if="!row.isEditing" type="primary" @click="editRow(row)">Edit</el-button>
+                    <el-button v-if="!row.isEditing" @click="editRow(row)">
+                        <el-icon>
+                            <Edit/>
+                        </el-icon>
+                    </el-button>
                 </div>
             </template>
         </el-table-column>
@@ -29,10 +33,13 @@
 <script>
 import { reactive } from 'vue';
 import { ElTable } from 'element-plus';
+import { Edit } from '@element-plus/icons-vue';
 
     export default {
         components: {
-            ElTable
+            ElTable,
+            Edit,
+            
         },
         setup()  {
             const tableData = reactive([
@@ -106,9 +113,12 @@ import { ElTable } from 'element-plus';
             };
 
             const onAddItem = () => {
+                const today = new Date();
+                const formattedDate = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+
                 tableData.push({
-                    name: 'New Item',
-                    date: '2021-06-01',
+                    name: 'New Notebook',
+                    date: formattedDate,
                     numNote: 0,
                     isEditing: false
                 })
