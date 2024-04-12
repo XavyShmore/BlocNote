@@ -4,6 +4,7 @@ from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
 from dotenv import load_dotenv
 from flask_cors import CORS
+import pytz
 
 import jwt
 import re
@@ -235,17 +236,16 @@ def delete_note(note_id):
         return jsonify({"message": f"Delete note failed: {str(e)}"}), 500
 
 
-@app.route('/notes/<int:note_id>/versions', methods=['POST'])
-def save_note_content(note_id):
+@app.route('/<int:user_id>/notes/<int:note_id>/versions', methods=['POST'])
+def save_note_content(user_id, note_id):
     try:
         data = request.json
         content = data.get('content')
-        editor_id = data.get('editor_id')
 
-        if content is None or editor_id is None:
-            return jsonify({"message": "Content and editor ID are required"}), 400
+        if content is None:
+            return jsonify({"message": "Content is required"}), 400
 
-        create_note_version(note_id, content, editor_id)
+        create_note_version(note_id, content, user_id)
         return jsonify({"message": "Note version saved"}), 201
     except Exception as e:
         return jsonify({"message": f"Save note content failed: {str(e)}"}), 500
@@ -263,12 +263,18 @@ def get_note_versions(note_id):
         return jsonify({"message": f"Get note versions failed: {str(e)}"}), 500
 
 
-@app.route('/notes/<int:note_id>/versions/<string:date>', methods=['GET'])
-def get_note_version_by_date(note_id, date):
+@app.route('/notes/<int:note_id>/versions/date', methods=['GET'])
+def get_note_version_by_date(note_id):
+    data = request.json
+    date_str = data.get('date')
+
+    if not date_str:
+        return jsonify({"message": "Date is required"}), 400
+
     try:
-        date_obj = datetime.strptime(date, '%Y-%m-%dT%H:%M:%S')
+        date_obj = datetime.strptime(date_str, '%a, %d %b %Y %H:%M:%S GMT').replace(tzinfo=pytz.UTC)
     except ValueError:
-        return jsonify({"message": "Date format should me Y-m-dT"}), 400
+        return jsonify({"message": "Date format should be 'Day, DD Mon YYYY HH:MM:SS GMT'"}), 400
 
     try:
         version = get_version_of_note_by_date(note_id, date_obj)
@@ -280,12 +286,9 @@ def get_note_version_by_date(note_id, date):
         return jsonify({"message": f"Get note version by date failed: {str(e)}"}), 500
 
 
-@app.route('/notes/<int:note_id>/owners', methods=['GET'])
-def get_note_owners(note_id):
+@app.route('/<int:current_user_id>/notes/<int:note_id>/owners', methods=['GET'])
+def get_note_owners(current_user_id, note_id):
     try:
-        data = request.json
-        current_user_id = data.get('current_user_id')
-
         if not current_user_id:
             return jsonify({"message": "Current user id required"}), 404
 
