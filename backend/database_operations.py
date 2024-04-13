@@ -211,8 +211,18 @@ def insert_note(title, user_id):
     cursor = conn.cursor()
     cursor.callproc('create_note', [title, user_id])
     conn.commit()
+    cursor.execute("""
+            SELECT n.id 
+            FROM notes n 
+            JOIN user_has_access uha ON n.id = uha.note_id
+            WHERE uha.user_id = %s
+            ORDER BY n.id DESC
+            LIMIT 1
+        """, (user_id,))
+    note_id = cursor.fetchone()[0]
     cursor.close()
     conn.close()
+    return note_id
 
 
 def get_note_details(note_id):
@@ -285,7 +295,7 @@ def get_note_access_users(note_id, current_user_id):
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
     query = """
-        SELECT users.name
+        SELECT users.name, users.email, users.id
         FROM users
         JOIN user_has_access ON users.id = user_has_access.user_id
         WHERE user_has_access.note_id = %s AND users.id <> %s
