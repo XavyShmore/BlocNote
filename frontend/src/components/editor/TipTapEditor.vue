@@ -1,8 +1,9 @@
 <template>
-    <el-tiptap v-if="note" :extensions="extensions"  height="100%" placeholder="Input note here..." v-model:content="note.content"/>
+    <el-tiptap v-if="note" ref="editor" :extensions="extensions"  height="100%" placeholder="Input note here..." v-model:content="note.content"/>
 </template>
 
 <script>
+import { ref } from 'vue';
 import { getNote, saveNoteContent, getUserId } from '@/api';
 import {
   Doc,
@@ -33,7 +34,8 @@ export default {
     data() {
         return {
             note: { content: "" },
-            userId: null
+            userId: null,
+            editor: ref(null)
         }
     },
     setup() {
@@ -72,7 +74,6 @@ export default {
     },
     methods: {
         saveContent() {
-            console.log(this.note?.content)
             saveNoteContent(this.noteId, this.note?.content, this.userId);
         }
     },
@@ -81,7 +82,7 @@ export default {
         try {
             const data = await getNote(this.noteId);
             this.note = data;
-            console.log("Note fetched:", this.note);
+            this.$refs?.editor?.setContent(this.note.content); 
         } catch (error) {
             console.error('Error fetching note:', error);
         }

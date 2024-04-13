@@ -7,7 +7,7 @@
             <el-button class="noteButton" @click="saveNote">
                 Save
             </el-button>
-            <el-button class="noteButton">
+            <el-button class="noteButton" @click="shareNote">
                 Share
             </el-button>
         </div>
@@ -22,17 +22,30 @@
 </template>
 
 <script>
-import { defineComponent, ref } from 'vue';
-import { ElButton } from 'element-plus'
+import { defineComponent, ref, getCurrentInstance } from 'vue';
+import { ElButton, ElLoading, ElMessageBox, ElMessage } from 'element-plus'
 import TipTapEditor from '@/components/editor/TipTapEditor.vue'
-import { getNote } from '@/api'
+import { addNoteOwner, getNote, getNoteOwners, getUserId } from '@/api'
 
 export default defineComponent({
   components: {
     TipTapEditor,
-    ElButton
+    ElLoading,
+    ElButton,
+    ElMessageBox
+  },
+  data() {
+    return {
+    userId: null,
+    note: null,
+    noteName: '',
+    lastModif: 'Last Modification by : ',
+    lastModifDate: 'Last Modification Date : ',
+    owners: []
+    }
   },
   setup() {
+    const instance = getCurrentInstance();
     const tipTapEditor = ref(null);
 
     const saveNote = () => {
@@ -41,16 +54,48 @@ export default defineComponent({
         }
     }
 
-    return { tipTapEditor, saveNote }
+    const noteShareAttempt = (email) => {
+        ElMessage({
+            type: 'success',
+            message: `The note was shared to : ${email}`,
+        })
+    }
+
+    let shareNote = () => {
+        const ownerList = instance.proxy.getOwners();
+        console.log(ownerList);
+        ElMessageBox.prompt(
+            '<strong>Please enter the email of the person you want to share the note with<strong>',
+            'Share Note',
+        {
+            confirmButtonText: 'OK',
+            cancelButtonText: 'Cancel',
+            inputPattern:
+             // Regex for email validation found on the Element Plus documentation
+            /[\w!#$%&'*+/=?^_`{|}~-]+(?:\.[\w!#$%&'*+/=?^_`{|}~-]+)*@(?:[\w](?:[\w-]*[\w])?\.)+[\w](?:[\w-]*[\w])?/,
+            inputErrorMessage: 'Invalid Email',
+            dangerouslyUseHTMLString: true,
+        })
+        .then(({ value }) => {
+            noteShareAttempt(value);
+        })
+        .catch((error) => {
+            if (error === 'cancel' || error === 'close') {
+                ElMessage({
+                    type: 'info',
+                    message: 'Share canceled',
+                })
+            } else {
+                ElMessage({
+                    type: 'info',
+                    message: `Share canceled : ${error}`,
+                })
+            }
+        })
+    }
+
+    return { tipTapEditor, saveNote, shareNote }
   },
-    data() {
-        return {
-        note: null,
-        noteName: '',
-        lastModif: 'Last Modification by : ',
-        lastModifDate: 'Last Modification Date :'
-        }
-    },
     computed: {
         id() {
         return this.$route.params.id;
@@ -62,9 +107,44 @@ export default defineComponent({
             this.noteName = this.note.title;
             this.lastModif += this.note.user_last_modified;
             this.lastModifDate += this.note.last_modified;
+        },
+
+        async getOwners() {
+            try {
+                this.owners = await getNoteOwners(this.id, this.userId);
+            } catch (error) {
+                console.error('Failed to fetch note owners:', error);
+            }
+            return this.owners;
+        },
+
+        async addOwner() {
+            let loadingInstance = null;
+            try {
+                loadingInstance = ElLoading.service({
+                lock: true,
+                text: 'Adding New Owner...',
+                background: 'rgba(0, 0, 0, 0.7)'
+                });
+                await addNoteOwner(this.id, this.userId);
+            
+            } catch (error) {
+                ElMessage({
+                    message: 'Failed to add or fetch notebooks',
+                    type: 'error'
+                });
+                console.error('Failed to add or fetch notebooks:', error);
+            } finally {
+                if (loadingInstance) {
+                    loadingInstance.close();
+                }
+            }
         }
+        
+        
     },
     mounted() {
+        this.userId = getUserId();
         this.getNoteInfo();
     }
 });

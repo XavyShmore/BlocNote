@@ -9,7 +9,6 @@ export const getUserId = () => {
     }
 
     const decoded_token = jwtDecode(token);
-    console.log(decoded_token)
     return decoded_token.user_id;
 };
 
@@ -230,7 +229,7 @@ export const setNoteTitle = async (noteId, title) => {
 
 
 export const saveNoteContent = async (noteId, content, userId) => {
-    const response = await fetch(`${API_URL}/${userId}/${noteId}/versions`, {
+    const response = await fetch(`${API_URL}/${userId}/notes/${noteId}/versions`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
