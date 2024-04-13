@@ -333,3 +333,23 @@ def give_user_access_to_note(note_id, email):
 
     cursor.close()
     conn.close()
+
+def get_recent_notes_for_user(user_id):
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+    query = """
+    SELECT n.id, n.title, MAX(v.creation) as last_modified
+    FROM notes n
+    JOIN versions v ON n.id = v.note_id
+    JOIN user_has_access uha ON n.id = uha.note_id
+    WHERE uha.user_id = %s
+    GROUP BY n.id, n.title
+    ORDER BY last_modified DESC
+    LIMIT 5
+    """
+    cursor.execute(query, (user_id,))
+    notes = cursor.fetchall()
+    cursor.close()
+    conn.close()
+    return notes
+
