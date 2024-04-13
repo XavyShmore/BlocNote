@@ -247,6 +247,14 @@ def get_note_details(note_id):
     conn.close()
     return note
 
+def update_note_title(note_id, title):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    query = "UPDATE notes SET title = %s WHERE id = %s"
+    cursor.execute(query, (title, note_id))
+    conn.commit()
+    cursor.close()
+    conn.close()
 
 
 def create_note_version(note_id, content, editor_id):
