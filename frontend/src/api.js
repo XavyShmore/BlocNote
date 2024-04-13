@@ -281,13 +281,18 @@ export const getNoteOwners = async (noteId, currentUserId) => {
     return await response.json();
 };
 
-export const addNoteOwner = async (noteId, userId) => {
-    const response = await fetch(`${API_URL}/notes/${noteId}/owners/${userId}`, {
+export const addNoteOwner = async (noteId, email) => {
+    const response = await fetch(`/notes/${noteId}/owners`, {
         method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email })
     });
 
     return await response.json();
 };
+
 
 
 
