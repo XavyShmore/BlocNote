@@ -294,5 +294,12 @@ export const addNoteOwner = async (noteId, email) => {
 };
 
 
+export const getRecentNotes = async (userId) => {
+    const response = await fetch(`/user/${userId}/recent`, {
+        method: 'GET',
+    });
+
+    return await response.json();
+};
 
 

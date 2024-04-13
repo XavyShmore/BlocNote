@@ -333,6 +333,14 @@ def add_note_owner(note_id):
         return jsonify({"message": f"Add note owner failed: {str(e)}"}), 500
 
 
+@app.route('/<int:user_id>/recent', methods=['GET'])
+def get_recent_notes(user_id):
+    try:
+        notes = get_recent_notes_for_user(user_id)
+        return jsonify(notes), 200
+    except Exception as e:
+        return jsonify({"message": f"Failed to fetch recent notes: {str(e)}"}), 500
+
 def is_valid_email(email):
     email_regex = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
     return re.match(email_regex, email) is not None
