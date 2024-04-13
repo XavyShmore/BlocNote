@@ -66,7 +66,7 @@ import { getUserId, getNotebooks, createNotebook, deleteNotebook, renameNotebook
                 try {
                     loadingInstance = ElLoading.service({
                     lock: true,
-                    text: 'Adding New Notebook...',
+                    text: 'Deleting Notebook...',
                     background: 'rgba(0, 0, 0, 0.7)'
                     });
 
@@ -75,10 +75,10 @@ import { getUserId, getNotebooks, createNotebook, deleteNotebook, renameNotebook
 
                 } catch (error) {
                     ElMessage({
-                        message: 'Failed to add or fetch notebooks',
+                        message: 'Failed to delete or fetch notebooks',
                         type: 'error'
                     });
-                    console.error('Failed to add or fetch notebooks:', error);
+                    console.error('Failed to delete or fetch notebooks:', error);
                 } finally {
                     if (loadingInstance) {
                         loadingInstance.close();
@@ -100,7 +100,7 @@ import { getUserId, getNotebooks, createNotebook, deleteNotebook, renameNotebook
                 try {
                     loadingInstance = ElLoading.service({
                     lock: true,
-                    text: 'Adding New Notebook...',
+                    text: 'Changing Notebook Name...',
                     background: 'rgba(0, 0, 0, 0.7)'
                     });
 
@@ -109,10 +109,10 @@ import { getUserId, getNotebooks, createNotebook, deleteNotebook, renameNotebook
 
                 } catch (error) {
                     ElMessage({
-                        message: 'Failed to add or fetch notebooks',
+                        message: 'Failed to change or fetch notebooks names',
                         type: 'error'
                     });
-                    console.error('Failed to add or fetch notebooks:', error);
+                    console.error('Failed to change or fetch notebooks names:', error);
                 } finally {
                     if (loadingInstance) {
                         loadingInstance.close();

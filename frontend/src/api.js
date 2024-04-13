@@ -213,7 +213,7 @@ export const deleteNote = async (noteId) => {
         method: 'DELETE',
     });
 
-    return await response.json();
+    return await response;
 };
 
 export const saveNoteContent = async (noteId, content, userId) => {

@@ -1,8 +1,9 @@
 <template>
-    <el-tiptap :extensions="extensions" :editorProps="props" height="100%"/>
+    <el-tiptap v-if="note" :extensions="extensions"  height="100%" placeholder="Input note here..." v-model:content="note.content"/>
 </template>
 
 <script>
+import { getNote, saveNoteContent, getUserId } from '@/api';
 import {
   Doc,
   Text,
@@ -26,12 +27,14 @@ import {
   HardBreak,
   History,
   Fullscreen,
-  CodeView
-
 } from 'element-tiptap-vue3-fixed';
 
 export default {
-    components: {
+    data() {
+        return {
+            note: { content: "" },
+            userId: null
+        }
     },
     setup() {
         const extensions = [
@@ -57,27 +60,35 @@ export default {
             HardBreak,
             History,
             Fullscreen,
-            CodeView,
-
         ];
 
-        const props = {
-            editorProps: {
-                attributes:
-                {
-                    class: "editorBorder"
-                }
-            }
+        return { extensions };
+    },
+    props: {
+        noteId: {
+            type: String,
+            required: true
+        },
+    },
+    methods: {
+        saveContent() {
+            console.log(this.note?.content)
+            saveNoteContent(this.noteId, this.note?.content, this.userId);
         }
+    },
+    async created() {
+        this.userId = getUserId();
+        try {
+            const data = await getNote(this.noteId);
+            this.note = data;
+            console.log("Note fetched:", this.note);
+        } catch (error) {
+            console.error('Error fetching note:', error);
+        }
+    },
 
-        return { extensions, props }
-  },
 }
 </script>
 
 <style>
-.editorBorder {
-    border-color: red;
-}
-
 </style>

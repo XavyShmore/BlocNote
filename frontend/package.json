@@ -13,6 +13,7 @@
     "@tiptap/starter-kit": "^2.3.0",
     "@tiptap/vue-3": "^2.3.0",
     "axios": "^1.6.8",
+    "codemirror": "^6.0.1",
     "core-js": "^3.8.3",
     "element-plus": "^2.6.3",
     "element-tiptap": "^2.2.1",

@@ -1,12 +1,12 @@
 <template>
     <el-table :data="tableData" row-key="id" class="tableContent">
-        <el-table-column prop="name" label="Name">
+        <el-table-column prop="title" label="Title">
         <template #default="{row}">
                 <div style="display: flex; justify-content: space-between;">
                     <div v-if="!row.isEditing">
-                        {{ row.name }}
+                        {{ row.title }}
                     </div>
-                    <el-input v-else v-model="row.name" @blur="finishEdit(row)"/>
+                    <el-input v-else v-model="row.title" @blur="finishEdit(row)"/>
                     <el-button v-if="!row.isEditing" @click="editRow(row)">
                         <el-icon>
                             <Edit/>
@@ -15,8 +15,8 @@
                 </div>
             </template>
         </el-table-column>
-        <el-table-column prop="date" label="Creation Date" sortable></el-table-column>
-        <el-table-column prop="modifDate" label="Last Modification" sortable></el-table-column>
+        <el-table-column prop="created" label="Creation Date" sortable></el-table-column>
+        <el-table-column prop="last_modified" label="Last Modification" sortable></el-table-column>
         <el-table-column fixed="right" label="Action">
             <template #default="{row}">
                 <el-button type="primary" @click="handleOpen(row)">Open</el-button>
@@ -34,6 +34,7 @@
 </template>
 
 <script>
+import { reactive } from 'vue';
 import { Edit, Delete } from '@element-plus/icons-vue';
 import { ElTable, ElLoading, ElMessage } from 'element-plus';
 import { getNotebook, getNotesFromNotebook, getUserId, deleteNote, createNote, addNoteToNotebook } from '@/api';
@@ -54,10 +55,7 @@ export default {
     return {
       userId: null,
       notebook: null,
-      tableData: [
-        { name: 'Alice', date: '2017-01-15', modifDate: '2022-07-20', isEditing: false },
-        { name: 'Bob', date: '2015-09-23', modifDate: '2023-03-11', isEditing: false },
-      ]
+      tableData: reactive([])
     };
   },
   async created() {
@@ -80,11 +78,39 @@ export default {
         try {
             loadingInstance = ElLoading.service({
             lock: true,
-            text: 'Adding New Notebook...',
+            text: 'Deleting Note...',
             background: 'rgba(0, 0, 0, 0.7)'
             });
 
             await deleteNote(objectToDelete?.id);
+            this.refreshTable();
+
+        } catch (error) {
+            ElMessage({
+                message: 'Failed to delete or fetch note',
+                type: 'error'
+            });
+            console.error('Failed to delete or fetch note:', error);
+        } finally {
+            if (loadingInstance) {
+                loadingInstance.close();
+            }
+        }
+    },
+    editRow(row) {
+      row.isEditing = true;
+    },
+    async finishEdit(row) {
+      row.isEditing = false;
+      let loadingInstance = null;
+        try {
+            loadingInstance = ElLoading.service({
+            lock: true,
+            text: 'Adding New Notebook...',
+            background: 'rgba(0, 0, 0, 0.7)'
+            });
+
+            // TODO: Update the note title
             this.refreshTable();
 
         } catch (error) {
@@ -99,14 +125,8 @@ export default {
             }
         }
     },
-    editRow(row) {
-      row.isEditing = true;
-    },
-    finishEdit(row) {
-      row.isEditing = false;
-    },
     handleOpen(row) {
-      console.log('Opening row:', row);
+      this.$router.push({ name: 'note', params: { id: row.id } });
     },
     async onAddItem() {
         let loadingInstance = null;
