@@ -216,8 +216,8 @@ export const deleteNote = async (noteId) => {
     return await response.json();
 };
 
-export const saveNoteContent = async (noteId, content, editorId) => {
-    const response = await fetch(`${API_URL}/notes/${noteId}/versions`, {
+export const saveNoteContent = async (noteId, content, userId) => {
+    const response = await fetch(`${API_URL}/${userId}/${noteId}/versions`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -226,7 +226,6 @@ export const saveNoteContent = async (noteId, content, editorId) => {
         },
         body: JSON.stringify({
             content,
-            editor_id: editorId,
         }),
     });
 
@@ -242,24 +241,28 @@ export const getNoteVersions = async (noteId) => {
 };
 
 export const getNoteVersionByDate = async (noteId, date) => {
-    const response = await fetch(`${API_URL}/notes/${noteId}/versions/${date}`, {
+    const formattedDate = new Date(date).toISOString();
+    const response = await fetch(`${API_URL}/notes/${noteId}/versions/date`, {
         method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            date: formattedDate
+        })
     });
 
     return await response.json();
 };
 
 export const getNoteOwners = async (noteId, currentUserId) => {
-    const response = await fetch(`${API_URL}/notes/${noteId}/owners`, {
+    const response = await fetch(`${API_URL}/${currentUserId}/notes/${noteId}/owners`, {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
             "mode": "no-cors", 
             "access-control-allow-origin": "*"
         },
-        body: JSON.stringify({
-            current_user_id: currentUserId,
-        }),
     });
 
     return await response.json();

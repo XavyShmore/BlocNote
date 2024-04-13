@@ -209,15 +209,10 @@ def get_notes_in_notebook(notebook_id):
 def insert_note(title, user_id):
     conn = get_db_connection()
     cursor = conn.cursor()
-    try:
-        cursor.callproc('create_note', [title, user_id])
-        conn.commit()
-        cursor.close()
-        conn.close()
-    except Exception as e:
-        cursor.close()
-        conn.close()
-        raise e
+    cursor.callproc('create_note', [title, user_id])
+    conn.commit()
+    cursor.close()
+    conn.close()
 
 
 def get_note_details(note_id):
