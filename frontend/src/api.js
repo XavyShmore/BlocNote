@@ -67,6 +67,8 @@ export const setUserName = async (userId, name) => {
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json',
+            "mode": "no-cors", 
+            "access-control-allow-origin": "*"
         },
         body: JSON.stringify({
             name,
@@ -81,6 +83,8 @@ export const setUserBio = async (userId, bio) => {
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json',
+            "mode": "no-cors", 
+            "access-control-allow-origin": "*"
         },
         body: JSON.stringify({
             bio,
@@ -111,6 +115,8 @@ export const createNotebook = async (title, userId) => {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
+            "mode": "no-cors", 
+            "access-control-allow-origin": "*"
         },
         body: JSON.stringify({
             title,
@@ -142,6 +148,8 @@ export const renameNotebook = async (notebookId, newTitle) => {
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json',
+            "mode": "no-cors", 
+            "access-control-allow-origin": "*"
         },
         body: JSON.stringify({
             title: newTitle,
@@ -156,7 +164,7 @@ export const deleteNotebook = async (notebookId) => {
         method: 'DELETE',
     });
 
-    return await response.json();
+    return await response.text().then(text => text ? JSON.parse(text) : {});
 };
 
 export const getNotesFromNotebook = async (notebookId) => {
@@ -180,6 +188,8 @@ export const createNote = async (title, userId) => {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
+            "mode": "no-cors", 
+            "access-control-allow-origin": "*"
         },
         body: JSON.stringify({
             title,
@@ -211,6 +221,8 @@ export const saveNoteContent = async (noteId, content, editorId) => {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
+            "mode": "no-cors", 
+            "access-control-allow-origin": "*"
         },
         body: JSON.stringify({
             content,
@@ -242,6 +254,8 @@ export const getNoteOwners = async (noteId, currentUserId) => {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
+            "mode": "no-cors", 
+            "access-control-allow-origin": "*"
         },
         body: JSON.stringify({
             current_user_id: currentUserId,

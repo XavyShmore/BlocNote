@@ -1,7 +1,10 @@
 <template>
   <el-page-header @back="goBack" class="pageHeader">
     <template #content>
-      <span class="text-large font-600 mr-3"> {{ title }} </span>
+      <span class="text-large font-600 mr-3"> {{ capitalizeFirstLetter(title) }} </span>
+    </template>
+    <template #extra>
+        <el-button type="primary" @click="logout">Logout</el-button>
     </template>
     <template>
         <el-divider style="margin-top: 12px;"/>
@@ -10,12 +13,14 @@
 </template>
 
 <script>
-import { ElPageHeader, ElDivider } from 'element-plus';
+import { ElPageHeader, ElDivider, ElButton } from 'element-plus';
+import { useRouter } from 'vue-router';
 
 export default {
     components: {
         ElPageHeader,
-        ElDivider
+        ElDivider,
+        ElButton
     },
     props: {
         title: {
@@ -24,11 +29,20 @@ export default {
         }
     },
     setup() {
+        const router = useRouter();
         const goBack = () => {
             console.log('go back')
         }
+        function capitalizeFirstLetter(string) {
+            return string?.charAt(0)?.toUpperCase() + string?.slice(1);
+        }
 
-        return { goBack }
+        const logout = () => {
+            localStorage.removeItem('token');
+            router.push({ name: 'login' });
+        }
+
+        return { goBack, capitalizeFirstLetter, logout }
     }
 }
 

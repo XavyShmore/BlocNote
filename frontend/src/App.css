@@ -26,3 +26,7 @@ p {
 .authFrame .el-form-item .el-input__inner {
     width: 100%;
 }
+
+.el-textarea__inner {
+    resize: none !important;
+  }

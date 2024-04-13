@@ -40,7 +40,7 @@ const routes = [
     }
   },
   {
-    path: '/notebook/:notebookId',
+    path: '/notebook/:id',
     name: 'notebook',
     component: Notebook,
     meta: {
@@ -49,7 +49,7 @@ const routes = [
     }
   },
   {
-    path: '/note/:noteId',
+    path: '/note/:id',
     name: 'note',
     component: Note,
     meta: {

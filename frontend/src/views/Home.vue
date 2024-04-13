@@ -2,66 +2,77 @@
   <div class="home">
     <PageTitle fontSize="4em" width="75%" class="titleHeader">
       <template v-slot:title>
-        Home
+        {{ user?.name }}
       </template>
     </PageTitle>
   </div>
-  <div class="content">
-    <div class="recentlyEdited">
-      <h2>Recently Edited</h2>
-      <ul>
-        <li v-for="note in recentNotes.slice(0, 6)" :key="note.id">
-          <a href="/notes/id">{{ note.title }}</a>
-        </li>
-      </ul>
+  <div class="homeContent">
+    <div class="bioSection">
+      <h2>Bio</h2>
+      <el-input 
+        v-model="bio"
+        type="textarea"
+        :rows="3"
+        placeholder="Please input your bio"
+        class="bioInput"
+        @blur="updateBio"
+      />
     </div>
-    <div class="myLists">
-      <h2>My Lists</h2>
-      <ul>
-        <li v-for="list in myLists.slice(0, 5)" :key="list.id">
-          <a href="/notebook/id">{{ list.title }}</a>
-        </li>
-        <li><a href="/lists">Voir plus +</a></li>
-      </ul>
+    <div class="lists">
+      <div class="recentlyEdited">
+        <h2>Recently Edited</h2>
+        <ul>
+          <li v-for="note in recentNotes.slice(0, 6)" :key="note.id">
+            <a href="/notes/id">{{ note.title }}</a>
+          </li>
+        </ul>
+      </div>
+      <div class="myLists">
+        <h2>My Lists</h2>
+        <ul>
+          <li v-for="list in myLists.slice(0, 5)" :key="list.id">
+            <a href="/notebook/id">{{ list.title }}</a>
+          </li>
+          <li><a href="/lists">Voir plus +</a></li>
+        </ul>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
 import PageTitle from '@/components/PageHeader/PageTitle.vue'
-import { getUserId, getUserProfile } from '@/api'
+import { ElInput } from 'element-plus'
+import { getUserId, getUserProfile, setUserBio, getNotebooks } from '@/api'
 
 export default {
   components: {
-    PageTitle
+    PageTitle,
+    ElInput
   },
   data() {
     return {
       recentNotes: [],
-      myLists: []
+      myLists: [],
+      user: null,
+      bio: '',
+      userId: ''
     }
   },
-  created() {
+  async created() {
     const userId = getUserId()
-    const user = getUserProfile(userId)
-    console.log(user)
+    this.userId = userId
+    
+    const user = await getUserProfile(userId)
+    this.user = user
+    this.bio = user?.bio
     this.recentNotes = [
       { id: 1, title: 'Note 1' },
       { id: 2, title: 'Note 2' },
     ]
 
-    this.myLists = [
-      { id: 1, title: 'List 1' },
-      { id: 2, title: 'List 2' },
-      { id: 3, title: 'List 3' },
-      { id: 4, title: 'List 4' },
-      { id: 5, title: 'List 5' },
-      { id: 6, title: 'List 6' },
-      { id: 7, title: 'List 7' },
-      { id: 8, title: 'List 8' },
-      { id: 9, title: 'List 9' },
-      { id: 10, title: 'List 10' }
-    ]
+    this.myLists = await getNotebooks(userId)
+    console.log(this.myLists)
   },
   methods: {
     goToNote(id) {
@@ -72,6 +83,9 @@ export default {
     },
     goToLists() {
       this.$router.push('/lists')
+    },
+    async updateBio() {
+      await setUserBio(this.userId, this.bio)
     }
   }
 
@@ -88,13 +102,36 @@ export default {
   justify-content: center;
 }
 
-.content {
+.lists {
   display: flex;
   margin-top: 5%;
   font-size: 1.5em;
   justify-content: space-evenly;
+  width: 100%;
 }
 
+.bioSection {
+  width: 75%;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.bioInput {
+  width: 100%;
+  height: 100%;
+}
+
+.homeContent {
+  height: 70vh;
+  margin-top: 1%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.el-textarea__inner {
+  height: 100%;
+}
 
 </style>
 

@@ -1,12 +1,12 @@
 <template>
-    <el-table :data="tableData" row-key="id" class="tableContent">
-        <el-table-column prop="name" label="Name">
+    <el-table :data="this.tableData" row-key="id" class="tableContent">
+        <el-table-column prop="title" label="Title">
             <template #default="{row}">
                 <div style="display: flex; justify-content: space-between;">
                     <div v-if="!row.isEditing">
-                        {{ row.name }}
+                        {{ row.title }}
                     </div>
-                    <el-input v-else v-model="row.name" @blur="finishEdit(row)"/>
+                    <el-input v-else v-model="row.title" @blur="finishEdit(row)"/>
                     <el-button v-if="!row.isEditing" @click="editRow(row)">
                         <el-icon>
                             <Edit/>
@@ -15,13 +15,16 @@
                 </div>
             </template>
         </el-table-column>
-
-        <el-table-column prop="date" label="Creation Date" sortable></el-table-column>
-        <el-table-column prop="numNote" label="Number of Notes" sortable></el-table-column>
+        <el-table-column prop="creation" label="Creation Date" sortable></el-table-column>
+        <el-table-column prop="number_of_notes" label="Number of Notes" sortable></el-table-column>
         <el-table-column fixed="right" label="Action">
             <template #default="{row}">
                 <el-button type="primary" @click="handleOpen(row)">Open</el-button>
-                <el-button type="danger" @click.prevent="deleteRow(row)">Delete</el-button>
+                <el-button type="danger" @click.prevent="deleteRow(row)">
+                    <el-icon>
+                        <Delete/>
+                    </el-icon>
+                </el-button>
             </template>
         </el-table-column>
     </el-table>
@@ -32,100 +35,115 @@
 
 <script>
 import { reactive } from 'vue';
-import { ElTable } from 'element-plus';
-import { Edit } from '@element-plus/icons-vue';
+import { ElTable, ElLoading, ElMessage } from 'element-plus';
+import { Edit, Delete } from '@element-plus/icons-vue';
+import { getUserId, getNotebooks, createNotebook, deleteNotebook, renameNotebook } from '@/api.js';
 
     export default {
         components: {
             ElTable,
             Edit,
-            
+            Delete,
+            ElMessage
         },
-        setup()  {
-            const tableData = reactive([
-            {
-                name: 'Tom',
-                date: '2016-05-03',
-                numNote: 3
-            },
-            {
-            name: 'Milo', date: '2018-10-10', numNote: 2, isEditing: false
-            },
-            {
-            name: 'Alice', date: '2016-05-16', numNote: 9, isEditing: false
-            },
-            {
-            name: 'Nora', date: '2018-10-15', numNote: 1, isEditing: false
-            },
-            {
-            name: 'Charlie', date: '2017-11-07', numNote: 2, isEditing: false
-            },
-            {
-            name: 'Hannah', date: '2018-08-16', numNote: 7, isEditing: false
-            },
-            {
-            name: 'Riley', date: '2015-01-23', numNote: 3, isEditing: false
-            },
-            {
-            name: 'Fiona', date: '2015-07-25', numNote: 7, isEditing: false
-            },
-            {
-            name: 'Kevin', date: '2019-05-30', numNote: 8, isEditing: false
-            },
-            {
-            name: 'Oscar', date: '2016-08-08', numNote: 10, isEditing: false
-            },
-            {
-            name: 'Quinn', date: '2018-06-25', numNote: 1, isEditing: false
-            },
-            {
-            name: 'Bob', date: '2019-11-16', numNote: 1, isEditing: false
-            },
-            {
-            name: 'Luna', date: '2018-07-19', numNote: 7, isEditing: false
-            },
-            {
-            name: 'Sam', date: '2017-06-25', numNote: 7, isEditing: false
-            },
-            {
-            name: 'Julia', date: '2019-03-08', numNote: 5, isEditing: false
+        data() {
+            return {
+                userId: null,
+                tableData: reactive([]),
             }
+        },
 
-            ])
+        async created() {
+            this.userId = getUserId();
+            this.tableData = await getNotebooks(this.userId)
+        },
+        methods: {
+            async refreshTable() {
+                this.tableData = await getNotebooks(this.userId);
+            },
+            async deleteRow(objectToDelete) {
+                let loadingInstance = null;
+                try {
+                    loadingInstance = ElLoading.service({
+                    lock: true,
+                    text: 'Adding New Notebook...',
+                    background: 'rgba(0, 0, 0, 0.7)'
+                    });
 
-            const deleteRow = (objectToDelete) => {
-                const index = tableData.indexOf(objectToDelete);
-                if (index !== -1) {
-                    tableData.splice(index, 1);
+                    await deleteNotebook(objectToDelete?.id);
+                    this.refreshTable();
+
+                } catch (error) {
+                    ElMessage({
+                        message: 'Failed to add or fetch notebooks',
+                        type: 'error'
+                    });
+                    console.error('Failed to add or fetch notebooks:', error);
+                } finally {
+                    if (loadingInstance) {
+                        loadingInstance.close();
+                    }
                 }
-            };
+            },
 
-            const handleOpen = (row) => {
-                console.log(row)
-            }
+            handleOpen(row) {
+                this.$router.push({ name: 'notebook', params: { id: row.id } });
+            },
 
-            const editRow = (row) => {
+            editRow(row) {
                 row.isEditing = true;
-            };
+            },
 
-            const finishEdit = (row) => {
+            async finishEdit(row) {
                 row.isEditing = false;
-            };
+                let loadingInstance = null;
+                try {
+                    loadingInstance = ElLoading.service({
+                    lock: true,
+                    text: 'Adding New Notebook...',
+                    background: 'rgba(0, 0, 0, 0.7)'
+                    });
 
-            const onAddItem = () => {
-                const today = new Date();
-                const formattedDate = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+                    await renameNotebook(row.id, row.title);
+                    this.refreshTable();
 
-                tableData.push({
-                    name: 'New Notebook',
-                    date: formattedDate,
-                    numNote: 0,
-                    isEditing: false
-                })
+                } catch (error) {
+                    ElMessage({
+                        message: 'Failed to add or fetch notebooks',
+                        type: 'error'
+                    });
+                    console.error('Failed to add or fetch notebooks:', error);
+                } finally {
+                    if (loadingInstance) {
+                        loadingInstance.close();
+                    }
+                }
+            },
+
+            async onAddItem() {
+                let loadingInstance = null;
+                try {
+                    loadingInstance = ElLoading.service({
+                    lock: true,
+                    text: 'Adding New Notebook...',
+                    background: 'rgba(0, 0, 0, 0.7)'
+                    });
+
+                    await createNotebook('New Notebook', this.userId);
+                    this.refreshTable();
+
+                } catch (error) {
+                    ElMessage({
+                        message: 'Failed to add or fetch notebooks',
+                        type: 'error'
+                    });
+                    console.error('Failed to add or fetch notebooks:', error);
+                } finally {
+                    if (loadingInstance) {
+                        loadingInstance.close();
+                    }
+                }
             }
-
-            return { tableData, deleteRow, handleOpen, onAddItem, editRow, finishEdit }
-
         }
     }
 

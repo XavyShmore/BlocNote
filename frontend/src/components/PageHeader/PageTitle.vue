@@ -19,7 +19,7 @@ export default {
             type: String,
             default: '100%'
         }
-    }
+    },
 }
 
 </script>

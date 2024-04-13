@@ -5,7 +5,7 @@
         Notebook
       </template>
     </PageTitle>
-    <TableNotebook class="tableContent"/>
+    <TableNotebook :notebookId="id" class="tableContent"/>
   </div>
 </template>
 
@@ -17,7 +17,12 @@ export default {
   components: {
     PageTitle,
     TableNotebook
-  }
+  },
+  computed: {
+    id() {
+      return this.$route.params.id;
+    }
+  },
 }
 
 </script>
