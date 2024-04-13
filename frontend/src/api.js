@@ -216,6 +216,19 @@ export const deleteNote = async (noteId) => {
     return await response.json();
 };
 
+export const setNoteTitle = async (noteId, title) => {
+    const response = await fetch(`/notes/${noteId}/title`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ title })
+    });
+
+    return await response.json();
+};
+
+
 export const saveNoteContent = async (noteId, content, userId) => {
     const response = await fetch(`${API_URL}/${userId}/${noteId}/versions`, {
         method: 'POST',

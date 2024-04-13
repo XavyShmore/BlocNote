@@ -251,6 +251,21 @@ def save_note_content(user_id, note_id):
         return jsonify({"message": f"Save note content failed: {str(e)}"}), 500
 
 
+@app.route('/notes/<int:note_id>/title', methods=['PUT'])
+def set_note_title(note_id):
+    try:
+        data = request.get_json()
+        title = data.get('title')
+
+        if not title:
+            return jsonify({"message": "Title is required"}), 400
+
+        update_note_title(note_id, title)
+        return jsonify({"message": "Note title updated"}), 200
+    except Exception as e:
+        return jsonify({"message": f"Set note title failed: {str(e)}"}), 500
+
+
 @app.route('/notes/<int:note_id>/versions', methods=['GET'])
 def get_note_versions(note_id):
     try:
