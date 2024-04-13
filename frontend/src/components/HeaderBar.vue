@@ -15,6 +15,7 @@
 <script>
 import { ElPageHeader, ElDivider, ElButton } from 'element-plus';
 import { useRouter } from 'vue-router';
+import { debounce } from 'lodash';
 
 export default {
     components: {
@@ -30,9 +31,15 @@ export default {
     },
     setup() {
         const router = useRouter();
-        const goBack = () => {
-            console.log('go back')
-        }
+
+        const goBack = debounce(() => {
+            if (window.history.length > 1) {
+                router.back();
+            } else {
+                router.push('/home');
+            }
+        }, 300);
+
         function capitalizeFirstLetter(string) {
             return string?.charAt(0)?.toUpperCase() + string?.slice(1);
         }

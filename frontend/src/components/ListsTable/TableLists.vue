@@ -52,11 +52,6 @@ import { getUserId, getNotebooks, createNotebook, deleteNotebook, renameNotebook
                 tableData: reactive([]),
             }
         },
-
-        async created() {
-            this.userId = getUserId();
-            this.tableData = await getNotebooks(this.userId)
-        },
         methods: {
             async refreshTable() {
                 this.tableData = await getNotebooks(this.userId);
@@ -144,7 +139,31 @@ import { getUserId, getNotebooks, createNotebook, deleteNotebook, renameNotebook
                     }
                 }
             }
-        }
+        },
+        async created() {
+            let loadingInstance = null;
+            try {
+                loadingInstance = ElLoading.service({
+                lock: true,
+                text: 'Adding New Notebooks...',
+                background: 'rgba(0, 0, 0, 0.7)'
+                });
+
+                this.userId = getUserId();
+                this.tableData = await getNotebooks(this.userId)
+
+            } catch (error) {
+                ElMessage({
+                    message: 'Failed to add or fetch notebooks',
+                    type: 'error'
+                });
+                console.error('Failed to add or fetch notebooks:', error);
+            } finally {
+                if (loadingInstance) {
+                    loadingInstance.close();
+                }
+            }
+        },
     }
 
 </script>

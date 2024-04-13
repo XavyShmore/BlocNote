@@ -216,10 +216,12 @@ export const deleteNote = async (noteId) => {
 };
 
 export const setNoteTitle = async (noteId, title) => {
-    const response = await fetch(`/notes/${noteId}/title`, {
+    const response = await fetch(`${API_URL}/notes/${noteId}/title`, {
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json',
+            "mode": "no-cors", 
+            "access-control-allow-origin": "*"
         },
         body: JSON.stringify({ title })
     });
@@ -258,6 +260,8 @@ export const getNoteVersionByDate = async (noteId, date) => {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
+            "mode": "no-cors", 
+            "access-control-allow-origin": "*"
         },
         body: JSON.stringify({
             date: formattedDate
@@ -281,10 +285,12 @@ export const getNoteOwners = async (noteId, currentUserId) => {
 };
 
 export const addNoteOwner = async (noteId, email) => {
-    const response = await fetch(`/notes/${noteId}/owners`, {
+    const response = await fetch(`${API_URL}/notes/${noteId}/owners`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
+            "mode": "no-cors", 
+            "access-control-allow-origin": "*"
         },
         body: JSON.stringify({ email })
     });
@@ -294,7 +300,7 @@ export const addNoteOwner = async (noteId, email) => {
 
 
 export const getRecentNotes = async (userId) => {
-    const response = await fetch(`/user/${userId}/recent`, {
+    const response = await fetch(`${API_URL}/${userId}/recent`, {
         method: 'GET',
     });
 

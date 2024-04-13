@@ -3,6 +3,7 @@
 </template>
 
 <script>
+import { ElLoading, ElMessage } from 'element-plus';
 import { ref } from 'vue';
 import { getNote, saveNoteContent, getUserId } from '@/api';
 import {
@@ -78,13 +79,33 @@ export default {
         }
     },
     async created() {
-        this.userId = getUserId();
+        let loadingInstance = null;
         try {
-            const data = await getNote(this.noteId);
-            this.note = data;
-            this.$refs?.editor?.setContent(this.note.content); 
+            loadingInstance = ElLoading.service({
+            lock: true,
+            text: 'Loading Note Data...',
+            background: 'rgba(0, 0, 0, 0.7)'
+            });
+
+            this.userId = getUserId();
+            try {
+                const data = await getNote(this.noteId);
+                this.note = data;
+                this.$refs?.editor?.setContent(this.note.content); 
+            } catch (error) {
+                console.error('Error fetching note:', error);
+            }
+
         } catch (error) {
-            console.error('Error fetching note:', error);
+            ElMessage({
+                message: 'Failed to load notes data',
+                type: 'error'
+            });
+            console.error('Failed to load notes data:', error);
+        } finally {
+            if (loadingInstance) {
+                loadingInstance.close();
+            }
         }
     },
 

@@ -19,21 +19,23 @@
       />
     </div>
     <div class="lists">
-      <div class="recentlyEdited">
+      <div class="listsRecent">
         <h2>Recently Edited</h2>
         <ul>
           <li v-for="note in recentNotes.slice(0, 6)" :key="note.id">
-            <a href="/notes/id">{{ note.title }}</a>
+            <el-link class="linkText" @click="goToNote(note.id)">{{ note.title }}</el-link>
           </li>
         </ul>
       </div>
-      <div class="myLists">
+      <div class="listsRecent">
         <h2>My Lists</h2>
         <ul>
           <li v-for="list in myLists.slice(0, 5)" :key="list.id">
-            <a href="/notebook/id">{{ list.title }}</a>
+            <el-link class="linkText" @click="goToNotebook(list.id)">{{ list.title }}</el-link>
           </li>
-          <li><a href="/lists">Voir plus +</a></li>
+          <li>
+            <el-link type="primary" @click="goToLists()">Voir plus +</el-link>
+          </li>
         </ul>
       </div>
     </div>
@@ -42,13 +44,14 @@
 
 <script>
 import PageTitle from '@/components/PageHeader/PageTitle.vue'
-import { ElInput } from 'element-plus'
-import { getUserId, getUserProfile, setUserBio, getNotebooks } from '@/api'
+import { ElInput, ElLink } from 'element-plus'
+import { getUserId, getUserProfile, setUserBio, getNotebooks, getRecentNotes } from '@/api'
 
 export default {
   components: {
     PageTitle,
-    ElInput
+    ElInput,
+    ElLink
   },
   data() {
     return {
@@ -66,17 +69,14 @@ export default {
     const user = await getUserProfile(userId)
     this.user = user
     this.bio = user?.bio
-    this.recentNotes = [
-      { id: 1, title: 'Note 1' },
-      { id: 2, title: 'Note 2' },
-    ]
 
     this.myLists = await getNotebooks(userId)
-    console.log(this.myLists)
+    this.recentNotes = await getRecentNotes(userId)
+    console.log(this.recentNotes)
   },
   methods: {
     goToNote(id) {
-      this.$router.push(`/notes/${id}`)
+      this.$router.push(`/note/${id}`)
     },
     goToNotebook(id) {
       this.$router.push(`/notebook/${id}`)
@@ -121,12 +121,26 @@ export default {
   height: 100%;
 }
 
+.listsRecent {
+  display: flex;
+  align-items: flex-start;
+  flex-direction: column;
+}
+
+.listsRecent h2 {
+  margin-bottom: 0;
+}
+
 .homeContent {
   height: 70vh;
   margin-top: 1%;
   display: flex;
   flex-direction: column;
   align-items: center;
+}
+
+.el-link__inner {
+  font-size: 1.5em;
 }
 
 .el-textarea__inner {

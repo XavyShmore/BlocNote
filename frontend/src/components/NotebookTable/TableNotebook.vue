@@ -37,7 +37,7 @@
 import { reactive } from 'vue';
 import { Edit, Delete } from '@element-plus/icons-vue';
 import { ElTable, ElLoading, ElMessage } from 'element-plus';
-import { getNotebook, getNotesFromNotebook, getUserId, deleteNote, createNote, addNoteToNotebook } from '@/api';
+import { getNotebook, getNotesFromNotebook, getUserId, deleteNote, createNote, addNoteToNotebook, setNoteTitle } from '@/api';
 
 export default {
   components: {
@@ -106,19 +106,20 @@ export default {
         try {
             loadingInstance = ElLoading.service({
             lock: true,
-            text: 'Adding New Notebook...',
+            text: 'Editing Note Name...',
             background: 'rgba(0, 0, 0, 0.7)'
             });
 
-            // TODO: Update the note title
+
+            await setNoteTitle(row.id, row.title);
             this.refreshTable();
 
         } catch (error) {
             ElMessage({
-                message: 'Failed to add or fetch notebooks',
+                message: 'Failed to fetch notes',
                 type: 'error'
             });
-            console.error('Failed to add or fetch notebooks:', error);
+            console.error('Failed to fetch notes:', error);
         } finally {
             if (loadingInstance) {
                 loadingInstance.close();
