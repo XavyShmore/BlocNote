@@ -40,7 +40,7 @@ def register():
             'user_id': user_id
         }, app.config['SECRET_KEY'])
 
-        return jsonify({"message": "User registered", "token": token}), 201
+        return jsonify({"message": "User registered", "token": str(token)}), 201
     except Exception as e:
         return jsonify({"message": f"Registration failed: {str(e)}"}), 500
 
@@ -63,7 +63,7 @@ def login():
                 'user_id': user['id']
             }, app.config['SECRET_KEY'])
 
-            return jsonify({"token": token}), 200
+            return jsonify({"token": str(token)}), 200
         else:
             return jsonify({"message": "Invalid email or password"}), 401
     except Exception as e:
