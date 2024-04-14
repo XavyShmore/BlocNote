@@ -22,7 +22,7 @@
 </template>
 
 <script>
-import { defineComponent, ref, getCurrentInstance } from 'vue';
+import { defineComponent, ref } from 'vue';
 import { ElButton, ElLoading, ElMessageBox, ElMessage } from 'element-plus'
 import TipTapEditor from '@/components/editor/TipTapEditor.vue'
 import { addNoteOwner, getNote, getNoteOwners, getUserId } from '@/api'
@@ -45,7 +45,7 @@ export default defineComponent({
     }
   },
   setup() {
-    const instance = getCurrentInstance();
+    // const instance = getCurrentInstance();
     const tipTapEditor = ref(null);
 
     const saveNote = () => {
@@ -54,47 +54,47 @@ export default defineComponent({
         }
     }
 
-    const noteShareAttempt = (email) => {
-        ElMessage({
-            type: 'success',
-            message: `The note was shared to : ${email}`,
-        })
-    }
+    // let shareNote = () => {
+    //     let formatedOwners = 'Not Shared Yet';
+    //     // const ownerList = instance.proxy.owners;
 
-    let shareNote = () => {
-        const ownerList = instance.proxy.getOwners();
-        console.log(ownerList);
-        ElMessageBox.prompt(
-            '<strong>Please enter the email of the person you want to share the note with<strong>',
-            'Share Note',
-        {
-            confirmButtonText: 'OK',
-            cancelButtonText: 'Cancel',
-            inputPattern:
-             // Regex for email validation found on the Element Plus documentation
-            /[\w!#$%&'*+/=?^_`{|}~-]+(?:\.[\w!#$%&'*+/=?^_`{|}~-]+)*@(?:[\w](?:[\w-]*[\w])?\.)+[\w](?:[\w-]*[\w])?/,
-            inputErrorMessage: 'Invalid Email',
-            dangerouslyUseHTMLString: true,
-        })
-        .then(({ value }) => {
-            noteShareAttempt(value);
-        })
-        .catch((error) => {
-            if (error === 'cancel' || error === 'close') {
-                ElMessage({
-                    type: 'info',
-                    message: 'Share canceled',
-                })
-            } else {
-                ElMessage({
-                    type: 'info',
-                    message: `Share canceled : ${error}`,
-                })
-            }
-        })
-    }
+    //     // if (this.ownerList > 0 && ownerList !== null && ownerList !== undefined) {
+    //     //     formatedOwners = '';
+    //     //     for (const owner of ownerList) {
+    //     //         formatedOwners += `${owner}  \n`;
+    //     //     }
+    //     // }
+    //     ElMessageBox.prompt(
+    //         `<strong>Shared with<strong> <br> <p>Current Owners : ${formatedOwners}<p> <br><br> <p>Enter the email of the person you want to share the note with :<p>`,
+    //         'Share Note',
+    //     {
+    //         confirmButtonText: 'Share',
+    //         cancelButtonText: 'Cancel',
+    //         inputPattern:
+    //          // Regex for email validation found on the Element Plus documentation
+    //         /[\w!#$%&'*+/=?^_`{|}~-]+(?:\.[\w!#$%&'*+/=?^_`{|}~-]+)*@(?:[\w](?:[\w-]*[\w])?\.)+[\w](?:[\w-]*[\w])?/,
+    //         inputErrorMessage: 'Invalid Email',
+    //         dangerouslyUseHTMLString: true,
+    //     })
+    //     .then(({ value }) => {
+    //         noteShareAttempt(value);
+    //     })
+    //     .catch((error) => {
+    //         if (error === 'cancel' || error === 'close') {
+    //             ElMessage({
+    //                 type: 'info',
+    //                 message: 'Share canceled',
+    //             })
+    //         } else {
+    //             ElMessage({
+    //                 type: 'info',
+    //                 message: `Share canceled : ${error}`,
+    //             })
+    //         }
+    //     })
+    // }
 
-    return { tipTapEditor, saveNote, shareNote }
+    return { tipTapEditor, saveNote }
   },
     computed: {
         id() {
@@ -112,6 +112,7 @@ export default defineComponent({
         async getOwners() {
             try {
                 this.owners = await getNoteOwners(this.id, this.userId);
+                console.log(this.owners);
             } catch (error) {
                 console.error('Failed to fetch note owners:', error);
             }
@@ -139,13 +140,61 @@ export default defineComponent({
                     loadingInstance.close();
                 }
             }
+        },
+        
+    async shareNote() {
+        try {
+            let owners = await this.getOwners();
+            let formattedOwners = owners.length ? owners.map(owner => owner.name).join(', ') : 'Not Shared Yet';
+
+            // Use Element Plus's MessageBox with input to get the email
+            this.$prompt(`Current Owners: ${formattedOwners}.<br> <br> Enter the email of the person you want to share the note with:`, 'Share Note', {
+                confirmButtonText: 'Share',
+                cancelButtonText: 'Cancel',
+                inputPattern: /[\w!#$%&'*+/=?^_`{|}~-]+(?:\.[\w!#$%&'*+/=?^_`{|}~-]+)*@(?:[\w](?:[\w-]*[\w])?\.)+[\w](?:[\w-]*[\w])?/,
+                inputErrorMessage: 'Invalid Email',
+                inputPlaceholder: 'Email Address',
+                dangerouslyUseHTMLString: true,
+                inputValue: '',
+            }).then(({ value }) => {
+                this.noteShareAttempt(value);
+            }).catch(error => {
+                if (error !== 'cancel' && error !== 'close' && error !== 'overlay') {
+                    this.$message({
+                        type: 'info',
+                        message: 'Sharing cancelled'
+                    });
+                }
+            });
+        } catch (error) {
+            ElMessage({
+                type: 'error',
+                message: `The note could not be shared: ${error}`,
+            })
         }
+    },
+    async noteShareAttempt(email) {
+        try {
+            await addNoteOwner(this.id, email);
+            ElMessage({
+                type: 'success',
+                message: `The note was shared to : ${email}`,
+            })
+        }
+        catch (error) {
+            ElMessage({
+                type: 'error',
+                message: `The note could not be shared: ${error}`,
+            })
+        }
+    }
         
         
     },
     mounted() {
         this.userId = getUserId();
         this.getNoteInfo();
+        this.getOwners();
     }
 });
 </script>
