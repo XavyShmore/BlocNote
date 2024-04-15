@@ -3,7 +3,19 @@
         <h1 class="title">
             {{ noteName }}
         </h1>
-        <div>
+        <div class="noteControl">
+            <div class="versionContent">
+                <label for="versionSelect" style="margin-right: 8px">Versions </label>
+                <el-select v-model="selectedVersion" id="versionSelect" placeholder="Select a version" @change="setContent(selectedVersion)">
+                    <el-option
+                        v-for="version in versions"
+                        :key="version.label"
+                        :label="version.label"
+                        :value="version.value"
+                    >
+                    </el-option>
+                </el-select>
+            </div>
             <el-button class="noteButton" @click="saveNote">
                 Save
             </el-button>
@@ -23,16 +35,17 @@
 
 <script>
 import { defineComponent, ref } from 'vue';
-import { ElButton, ElLoading, ElMessageBox, ElMessage } from 'element-plus'
+import { ElButton, ElLoading, ElMessageBox, ElMessage, ElSelect } from 'element-plus'
 import TipTapEditor from '@/components/editor/TipTapEditor.vue'
-import { addNoteOwner, getNote, getNoteOwners, getUserId } from '@/api'
+import { addNoteOwner, getNote, getNoteOwners, getNoteVersions, getUserId } from '@/api'
 
 export default defineComponent({
   components: {
     TipTapEditor,
     ElLoading,
     ElButton,
-    ElMessageBox
+    ElMessageBox,
+    ElSelect
   },
   data() {
     return {
@@ -41,12 +54,14 @@ export default defineComponent({
     noteName: '',
     lastModif: 'Last Modification by : ',
     lastModifDate: 'Last Modification Date : ',
-    owners: []
+    owners: [],
+    versions: [],
+
     }
   },
   setup() {
-    // const instance = getCurrentInstance();
     const tipTapEditor = ref(null);
+    const selectedVersion = ref(null);
 
     const saveNote = () => {
         if (tipTapEditor.value) {
@@ -54,47 +69,12 @@ export default defineComponent({
         }
     }
 
-    // let shareNote = () => {
-    //     let formatedOwners = 'Not Shared Yet';
-    //     // const ownerList = instance.proxy.owners;
+    const setContent = (content) => {
+        console.log(content)
+        tipTapEditor.value.setContent(content)
+    }
 
-    //     // if (this.ownerList > 0 && ownerList !== null && ownerList !== undefined) {
-    //     //     formatedOwners = '';
-    //     //     for (const owner of ownerList) {
-    //     //         formatedOwners += `${owner}  \n`;
-    //     //     }
-    //     // }
-    //     ElMessageBox.prompt(
-    //         `<strong>Shared with<strong> <br> <p>Current Owners : ${formatedOwners}<p> <br><br> <p>Enter the email of the person you want to share the note with :<p>`,
-    //         'Share Note',
-    //     {
-    //         confirmButtonText: 'Share',
-    //         cancelButtonText: 'Cancel',
-    //         inputPattern:
-    //          // Regex for email validation found on the Element Plus documentation
-    //         /[\w!#$%&'*+/=?^_`{|}~-]+(?:\.[\w!#$%&'*+/=?^_`{|}~-]+)*@(?:[\w](?:[\w-]*[\w])?\.)+[\w](?:[\w-]*[\w])?/,
-    //         inputErrorMessage: 'Invalid Email',
-    //         dangerouslyUseHTMLString: true,
-    //     })
-    //     .then(({ value }) => {
-    //         noteShareAttempt(value);
-    //     })
-    //     .catch((error) => {
-    //         if (error === 'cancel' || error === 'close') {
-    //             ElMessage({
-    //                 type: 'info',
-    //                 message: 'Share canceled',
-    //             })
-    //         } else {
-    //             ElMessage({
-    //                 type: 'info',
-    //                 message: `Share canceled : ${error}`,
-    //             })
-    //         }
-    //     })
-    // }
-
-    return { tipTapEditor, saveNote }
+    return { tipTapEditor, saveNote, setContent, selectedVersion }
   },
     computed: {
         id() {
@@ -142,59 +122,70 @@ export default defineComponent({
             }
         },
         
-    async shareNote() {
-        try {
-            let owners = await this.getOwners();
-            let formattedOwners = owners.length ? owners.map(owner => owner.name).join(', ') : 'Not Shared Yet';
-
-            // Use Element Plus's MessageBox with input to get the email
-            this.$prompt(`Current Owners: ${formattedOwners}.<br> <br> Enter the email of the person you want to share the note with:`, 'Share Note', {
-                confirmButtonText: 'Share',
-                cancelButtonText: 'Cancel',
-                inputPattern: /[\w!#$%&'*+/=?^_`{|}~-]+(?:\.[\w!#$%&'*+/=?^_`{|}~-]+)*@(?:[\w](?:[\w-]*[\w])?\.)+[\w](?:[\w-]*[\w])?/,
-                inputErrorMessage: 'Invalid Email',
-                inputPlaceholder: 'Email Address',
-                dangerouslyUseHTMLString: true,
-                inputValue: '',
-            }).then(({ value }) => {
-                this.noteShareAttempt(value);
-            }).catch(error => {
-                if (error !== 'cancel' && error !== 'close' && error !== 'overlay') {
-                    this.$message({
-                        type: 'info',
-                        message: 'Sharing cancelled'
-                    });
-                }
-            });
-        } catch (error) {
-            ElMessage({
-                type: 'error',
-                message: `The note could not be shared: ${error}`,
-            })
+        async shareNote() {
+            try {
+                let owners = await this.getOwners();
+                let formattedOwners = owners.length ? owners.map(owner => owner.name).join(', ') : 'Not Shared Yet';
+                
+                this.$prompt(`Current Owners: ${formattedOwners}.<br> <br> Enter the email of the person you want to share the note with:`, 'Share Note', {
+                    confirmButtonText: 'Share',
+                    cancelButtonText: 'Cancel',
+                    inputPattern: /[\w!#$%&'*+/=?^_`{|}~-]+(?:\.[\w!#$%&'*+/=?^_`{|}~-]+)*@(?:[\w](?:[\w-]*[\w])?\.)+[\w](?:[\w-]*[\w])?/,
+                    inputErrorMessage: 'Invalid Email',
+                    inputPlaceholder: 'Email Address',
+                    dangerouslyUseHTMLString: true,
+                    inputValue: '',
+                }).then(({ value }) => {
+                    this.noteShareAttempt(value);
+                }).catch(error => {
+                    if (error !== 'cancel' && error !== 'close' && error !== 'overlay') {
+                        this.$message({
+                            type: 'info',
+                            message: 'Sharing cancelled'
+                        });
+                    }
+                });
+            } catch (error) {
+                ElMessage({
+                    type: 'error',
+                    message: `The note could not be shared: ${error}`,
+                })
+            }
+        },
+        async noteShareAttempt(email) {
+            try {
+                await addNoteOwner(this.id, email);
+                ElMessage({
+                    type: 'success',
+                    message: `The note was shared to : ${email}`,
+                })
+            }
+            catch (error) {
+                ElMessage({
+                    type: 'error',
+                    message: `The note could not be shared: ${error}`,
+                })
+            }
+        },
+        async getNoteVersions() {
+            try {
+                let version = await getNoteVersions(this.id);
+                version.sort((a, b) => new Date(a.creation) - new Date(b.creation));
+                this.versions = version.map((version, index) => ({
+                    label: `Version ${index + 1}`,
+                    value: version.content, 
+                    creation: version.creation
+                }));
+            } catch (error) {
+                console.error('Failed to fetch note versions:', error);
+            }
         }
-    },
-    async noteShareAttempt(email) {
-        try {
-            await addNoteOwner(this.id, email);
-            ElMessage({
-                type: 'success',
-                message: `The note was shared to : ${email}`,
-            })
-        }
-        catch (error) {
-            ElMessage({
-                type: 'error',
-                message: `The note could not be shared: ${error}`,
-            })
-        }
-    }
-        
-        
     },
     mounted() {
         this.userId = getUserId();
         this.getNoteInfo();
         this.getOwners();
+        this.getNoteVersions();
     }
 });
 </script>
@@ -235,6 +226,19 @@ export default defineComponent({
 
 .editorClass {
     height: 320px;
+}
+
+.versionContent {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    margin-right: 1vw;
+}
+
+.noteControl {
+    display: flex;
+    justify-content: flex-end;
+    width: 22%;
 }
 
 </style>

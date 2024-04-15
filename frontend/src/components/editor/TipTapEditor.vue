@@ -76,7 +76,11 @@ export default {
     methods: {
         saveContent() {
             saveNoteContent(this.noteId, this.note?.content, this.userId);
-        }
+        },
+        setContent(content) {
+            console.log(content);
+            this.$refs?.editor?.setContent(content); 
+        },
     },
     async created() {
         let loadingInstance = null;
